@@ -85,7 +85,6 @@ export default (props) => {
         loading={isLoading}
       >
         <List
-          className={styles.bodyList}
           rowKey={'id'}
           grid={{
             gutter: 25,
