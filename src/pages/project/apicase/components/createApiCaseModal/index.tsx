@@ -50,17 +50,19 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
   };
 
   useEffect(() => {
-    setResponse(defaultResponse)
-    form.setFieldsValue({
-      caseName: props.currentApiCase.caseName,
-      requestMehod: props.currentApiCase.requestMehod,
-      requestPath: props.currentApiCase.requestPath,
-      requestHost: props.currentApiCase.requestHost,
-      requestHeaders: props.currentApiCase.requestHeaders,
-      requestQuery: props.currentApiCase.requestQuery,
-      requestBody: props.currentApiCase.requestBody,
-    });
-    getData();
+    if (props.visible){
+      setResponse(defaultResponse)
+      form.setFieldsValue({
+        caseName: props.currentApiCase.caseName,
+        requestMehod: props.currentApiCase.requestMehod,
+        requestPath: props.currentApiCase.requestPath,
+        requestHost: props.currentApiCase.requestHost,
+        requestHeaders: props.currentApiCase.requestHeaders,
+        requestQuery: props.currentApiCase.requestQuery,
+        requestBody: props.currentApiCase.requestBody,
+      })
+      getData();
+    }
   }, [props.visible]);
 
   const okHandler = () => {
