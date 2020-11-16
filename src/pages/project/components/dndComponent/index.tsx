@@ -1,58 +1,44 @@
 import React from 'react';
-import { DragSource, DropTarget } from 'react-dnd';
 import './index.less'
+import { useDrag, useDrop } from 'react-dnd';
 
-let dragingindex = -1;
-const BodyRow = (props) => {
-  const { isOver, connectDragSource, connectDropTarget, moveRow,
-    ...restProps } = props;
-  const styleY = { ...restProps.style, cursor: 'move' };
-  let { className } = restProps;
-  if (isOver) {
-    if (restProps.index > dragingindex) {
-      className += ' drop-over-downward';
-    }
-    if (restProps.index < dragingindex) {
-      className += ' drop-over-upward';
-    }
-  }
-  return connectDragSource(
-    connectDropTarget(<tr {...restProps} className={className} style={styleY} />),
+const type = 'DragableBodyRow';
+
+const DragableBodyRow = ({ index, moveRow, className, style, ...restProps }) => {
+  const ref = React.useRef();
+  const [{ isOver, dropClassName }, drop] = useDrop({
+    accept: type,
+    collect: monitor => {
+      const { index: dragIndex } = monitor.getItem() || {};
+      if (dragIndex === index) {
+        return {};
+      }
+      return {
+        isOver: monitor.isOver(),
+        dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
+      };
+    },
+    drop: item => {
+      // @ts-ignore
+      moveRow(item.index, index);
+    },
+  });
+  const [, drag] = useDrag({
+    item: { type, index },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+  drop(drag(ref));
+  return (
+    <tr
+      ref={ref}
+      className={`${className}${isOver ? dropClassName : ''}`}
+      style={{ cursor: 'move', ...style }}
+      {...restProps}
+    />
   );
 };
-
-const rowSource = {
-  beginDrag(props) {
-    dragingindex = props.index;
-    return {
-      index: props.index,
-    };
-  },
-};
-
-const rowTarget = {
-  drop(props, monitor) {
-    const dragIndex = monitor.getItem().index;
-    const hoverIndex = props.index;
-    if (dragIndex === hoverIndex) {
-      return;
-    }
-    props.moveRow(dragIndex, hoverIndex);
-    const mon = monitor.getItem();
-    mon.index = hoverIndex;
-  },
-};
-
-const DragableBodyRow = DropTarget('row', rowTarget, (connectIn, monitor) => ({
-  connectDropTarget: connectIn.dropTarget(),
-  isOver: monitor.isOver(),
-  dragingindex,
-}))(
-  DragSource('row', rowSource, con => ({
-    connectDragSource: con.dragSource(),
-  }))(BodyRow),
-);
-
 
 export default {
   body: {

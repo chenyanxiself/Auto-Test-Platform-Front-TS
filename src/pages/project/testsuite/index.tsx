@@ -18,6 +18,8 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import component from '@/pages/project/components/dndComponent';
 import { DndProvider } from 'react-dnd';
+import ExecuteSuiteModal from '@/pages/project/testsuite/components/executeSuiteModal';
+import { getEnvByProjectId } from '@/pages/project/service';
 
 const { confirm } = Modal;
 
@@ -160,39 +162,42 @@ const TestSuite = (props) => {
     </Button>
   );
 
-  const createFinishHandler = async (value)=>{
-    const res = await createSuite(projectId, value.suiteName)
+  const createFinishHandler = async (value) => {
+    const res = await createSuite(projectId, value.suiteName);
     if (res.status === 1) {
-      message.success('新建成功')
-      getSuiteData()
-      setCreateVisible(false)
+      message.success('新建成功');
+      getSuiteData();
+      setCreateVisible(false);
     } else {
-      message.warning(res.error)
+      message.warning(res.error);
     }
-  }
+  };
 
-  const modifyFinishHandler = async (keys)=>{
+  const modifyFinishHandler = async (keys) => {
     const res = await updateSuiteCaseRelation(
       selectedKey,
       projectId,
-      keys
-    )
+      keys,
+    );
     if (res.status === 1) {
-      message.success('编辑成功')
+      message.success('编辑成功');
       getRelatedCase();
-      setModifyVisible(false)
+      setModifyVisible(false);
+    } else {
+      message.warning(res.error);
+    }
+  };
+
+  const executeFinishHandler = async (values) => {
+    const res = await executeSuite(projectId, selectedKey, values)
+    if (res.status === 1) {
+      message.success('请在测试报告页面查看结果')
+      setExecuteVisible(false)
     } else {
       message.warning(res.error)
     }
-  }
+  };
 
-  const layout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 16 },
-  };
-  const tailLayout = {
-    wrapperCol: { offset: 6, span: 14 },
-  };
 
   const moveRow = async (dragIndex, hoverIndex) => {
     const dragRow = relatedCase[dragIndex];
@@ -265,15 +270,22 @@ const TestSuite = (props) => {
       <CreateSuiteModal
         visible={isCreateVisible}
         finishHandler={createFinishHandler}
-        cancelHandler={()=>setCreateVisible(false)}
+        cancelHandler={() => setCreateVisible(false)}
       />
       <ModifySuiteModal
         visible={isModifyVisible}
         finishHandler={modifyFinishHandler}
-        cancelHandler={()=>setModifyVisible(false)}
+        cancelHandler={() => setModifyVisible(false)}
         caseSource={caseSource}
         relatedCase={relatedCase}
       />
+      <ExecuteSuiteModal
+        visible={isExecuteVisible}
+        cancelHandler={() => setExecuteVisible(false)}
+        finishHandler={executeFinishHandler}
+        projectId={projectId}
+      />
+
     </div>
   );
 };

@@ -94,7 +94,6 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
     } else {
       message.warning(res.error);
     }
-    console.log(res.data);
     newResponse.isLoading = false;
     setResponse(newResponse);
   };
