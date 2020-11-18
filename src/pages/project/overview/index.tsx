@@ -7,7 +7,16 @@ import {
   createList,
   createTask,
 } from '@/pages/project/overview/service';
-import { Button, Card, message, Progress, Select, Drawer } from 'antd';
+import {
+  Button,
+  Card,
+  message,
+  Progress,
+  Select,
+  Drawer,
+  Form,
+  Input,
+} from 'antd';
 import { ContactsOutlined, CarOutlined, PlusOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import { ColumnsInfo, ProgressInfo } from './data';
@@ -39,6 +48,8 @@ interface OverviewProps {
   trigger: boolean;
   progress: ProgressInfo;
   dispatch: Dispatch;
+  currentTask: any;
+
   [name: string]: any;
 }
 
@@ -48,7 +59,9 @@ const Overview: React.FC<OverviewProps> = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [createListVisible, setCreateListVisible] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [isDrawerLoading, setDrawerLoading] = useState(false);
   const projectId = parseInt(props.match.params.id);
+  const [form] = Form.useForm();
 
   const selectHandler = key => {
     setTaskFilterStatus(key);
@@ -121,6 +134,13 @@ const Overview: React.FC<OverviewProps> = props => {
     getProgress();
   }, [props.trigger]);
 
+  useEffect(() => {
+    if (props.currentTask.id) {
+      setDrawerVisible(true);
+    } else {
+      setDrawerVisible(false);
+    }
+  }, [props.currentTask]);
   const tabChangeHandler = key => {
     setTaskRelationType(parseInt(key));
   };
@@ -136,6 +156,26 @@ const Overview: React.FC<OverviewProps> = props => {
     } else {
       message.warning(res.error);
     }
+  };
+
+  const drawerVisibleChangeHandler = visible => {
+    if (visible) {
+      form.setFieldsValue({
+        taskTitle: props.currentTask.title,
+        description: props.currentTask.description,
+      });
+    } else {
+      form.resetFields();
+    }
+  };
+
+  const closeDrawerHandler = () => {
+    console.log(props.currentTask.id);
+    console.log(form.getFieldsValue());
+    props.dispatch({
+      type: 'overview/setCurrentTask',
+      payload: {},
+    });
   };
 
   return (
@@ -155,7 +195,25 @@ const Overview: React.FC<OverviewProps> = props => {
         cancelHandler={() => setCreateListVisible(false)}
         finishHandler={createListHandler}
       />
-      <Drawer visible={true} mask={false} />
+      <Drawer
+        visible={drawerVisible}
+        afterVisibleChange={drawerVisibleChangeHandler}
+        onClose={closeDrawerHandler}
+        forceRender={true}
+        title={'任务详情'}
+        width={800}
+      >
+        <div>
+          <Form form={form}>
+            <Form.Item name={'taskTitle'} label={'任务标题'}>
+              <Input />
+            </Form.Item>
+            <Form.Item name={'description'} label={'任务描述'}>
+              <Input />
+            </Form.Item>
+          </Form>
+        </div>
+      </Drawer>
     </Card>
   );
 };
@@ -165,6 +223,7 @@ const mapStateToProps = state => {
     dataSource: state.overview.columnsList,
     trigger: state.overview.trigger,
     progress: state.overview.progress,
+    currentTask: state.overview.currentTask,
   };
 };
 export default connect(mapStateToProps)(Overview);

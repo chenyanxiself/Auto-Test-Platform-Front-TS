@@ -5,6 +5,7 @@ export interface ModelState {
   columnsList: ColumnsInfo[];
   trigger: boolean;
   progress: ProgressInfo;
+  currentTask: any;
 }
 
 export interface ModelType {
@@ -14,6 +15,7 @@ export interface ModelType {
     setColumnsList: Reducer<ModelState>;
     setTrigger: Reducer<ModelState>;
     setProgress: Reducer<ModelState>;
+    setCurrentTask: Reducer<ModelState>;
   };
 }
 
@@ -26,6 +28,7 @@ const Model: ModelType = {
       total: 0,
       finish: 0,
     },
+    currentTask: {},
   },
   reducers: {
     setColumnsList(state, action) {
@@ -36,6 +39,9 @@ const Model: ModelType = {
     },
     setProgress(state, action) {
       return { ...state, progress: action.payload };
+    },
+    setCurrentTask(state, action) {
+      return { ...state, currentTask: action.payload };
     },
   },
 };
