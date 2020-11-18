@@ -39,5 +39,9 @@ export default  {
   createProjectCaseUrl:'/project/case/createProjectCase',
   updateProjectCaseUrl:'/project/case/updateProjectCase',
   deleteProjectCaseUrl:'/project/case/deleteProjectCase',
-  getWorkstationProjectsUrl:'/workstation/getWorkstationProjects'
+  getWorkstationProjectsUrl:'/workstation/getWorkstationProjects',
+  getTaskByConditionUrl:'/project/overview/getTaskByCondition',
+  deleteTaskListUrl:'/project/overview/deleteTaskList',
+  deleteTaskUrl:'/project/overview/deleteTask',
+  updateListSortUrl:'/project/overview/updateListSort'
 }

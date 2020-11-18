@@ -1,48 +1,37 @@
-import React from 'react'
-import { DragDropContext , Draggable, Droppable } from 'react-beautiful-dnd';
+import React, { useEffect } from 'react';
+import Board from '@/pages/project/overview/components/board';
+import { connect } from 'umi';
+import { getTaskByCondition } from '@/pages/project/overview/service';
+import { message } from 'antd';
 
 
-export default (props)=>{
+const Overview = (props) => {
+  const projectId = parseInt(props.match.params.id);
+  const getData = async () => {
+    const res = await getTaskByCondition(projectId);
+    if (res.status == 1) {
+      props.dispatch({
+        type: 'overview/setColumnsList',
+        payload: res.data,
+      });
+    } else {
+      message.warning(res.error);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, [props.trigger]);
 
   return (
-    <DragDropContext
-      onDragStart={()=>{}}
-      onDragUpdate={()=>{}}
-      onDragEnd={()=>{}}
-    >
-      <Droppable droppableId="board" direction={'horizontal'}>
-        {(provided, snapshot) => (
-          <div
-            ref={provided.innerRef}
-            style={{display:'flex' }}
-            {...provided.droppableProps}
-          >
-            <Draggable draggableId="draggable-1" index={0}>
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <h4 style={{backgroundColor:'#EBECF0'}}>My draggable</h4>
-                </div>
-              )}
-            </Draggable>
-            <Draggable draggableId="draggable-2" index={1}>
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  <h4>My draggable</h4>
-                </div>
-              )}
-            </Draggable>
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
-  )
-}
+    <Board projectId={projectId}/>
+  );
+};
+
+const mapStateToProps = (state) => {
+  return {
+    dataSource: state.overview.columnsList,
+    trigger: state.overview.trigger,
+  };
+};
+export default connect(mapStateToProps)(Overview);
