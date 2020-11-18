@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Board from '@/pages/project/overview/components/board';
 import { connect, Dispatch } from 'umi';
-import { getTaskByCondition, getProjectProgress, createList, createTask } from '@/pages/project/overview/service';
-import { Button, Card, message, Progress, Select } from 'antd';
+import {
+  getTaskByCondition,
+  getProjectProgress,
+  createList,
+  createTask,
+} from '@/pages/project/overview/service';
+import { Button, Card, message, Progress, Select, Drawer } from 'antd';
 import { ContactsOutlined, CarOutlined, PlusOutlined } from '@ant-design/icons';
 import styles from './index.less';
-import { ColumnsInfo, ProgressInfo,CreateTaskModalInfo } from './data';
+import { ColumnsInfo, ProgressInfo } from './data';
 import CreateListModal from '@/pages/project/overview/components/createListModal';
-import CreateTaskModal from '@/pages/project/overview/components/createTaskModal';
 
 const tabList = [
   {
@@ -33,9 +37,8 @@ const tabList = [
 interface OverviewProps {
   dataSource: ColumnsInfo[];
   trigger: boolean;
-  progress: ProgressInfo
-  dispatch: Dispatch
-  createTaskModal:CreateTaskModalInfo
+  progress: ProgressInfo;
+  dispatch: Dispatch;
   [name: string]: any;
 }
 
@@ -44,6 +47,7 @@ const Overview: React.FC<OverviewProps> = props => {
   const [taskFilterStatus, setTaskFilterStatus] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [createListVisible, setCreateListVisible] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const projectId = parseInt(props.match.params.id);
 
   const selectHandler = key => {
@@ -65,11 +69,12 @@ const Overview: React.FC<OverviewProps> = props => {
     }
   };
 
-
   const extra = (
     <div className={styles.extra}>
       <Progress
-        percent={Math.round((props.progress.finish / props.progress.total) * 100)}
+        percent={Math.round(
+          (props.progress.finish / props.progress.total) * 100,
+        )}
         status="active"
         className={styles.progress}
       />
@@ -82,13 +87,21 @@ const Overview: React.FC<OverviewProps> = props => {
         <Select.Option value={1}>已完成</Select.Option>
         <Select.Option value={2}>未完成</Select.Option>
       </Select>
-      <Button type="dashed" onClick={() => setCreateListVisible(true)}><PlusOutlined />添加任务栏</Button>
+      <Button type="dashed" onClick={() => setCreateListVisible(true)}>
+        <PlusOutlined />
+        添加任务栏
+      </Button>
     </div>
   );
 
   const getData = async () => {
     setIsLoading(true);
-    const res = await getTaskByCondition(projectId, null, taskRelationType, taskFilterStatus);
+    const res = await getTaskByCondition(
+      projectId,
+      null,
+      taskRelationType,
+      taskFilterStatus,
+    );
     if (res.status == 1) {
       props.dispatch({
         type: 'overview/setColumnsList',
@@ -112,8 +125,8 @@ const Overview: React.FC<OverviewProps> = props => {
     setTaskRelationType(parseInt(key));
   };
 
-  const createListHandler =async (value) => {
-    const res = await createList(projectId,value.title)
+  const createListHandler = async value => {
+    const res = await createList(projectId, value.title);
     if (res.status === 1) {
       message.success('创建成功');
       setCreateListVisible(false);
@@ -122,25 +135,6 @@ const Overview: React.FC<OverviewProps> = props => {
       });
     } else {
       message.warning(res.error);
-    }
-  };
-
-  const createTaskHandler = async (value) => {
-    const res = await createTask(projectId,props.createTaskModal.listId,value.taskTitle,value.description)
-    if (res.status === 1){
-      props.dispatch({
-        type:'overview/setCreateTaskModal',
-        payload:{
-          visible:false,
-          listId:0
-        }
-      })
-      props.dispatch({
-        type: 'overview/setTrigger',
-      })
-      message.success('创建任务成功')
-    }else {
-      message.warning(res.error)
     }
   };
 
@@ -161,19 +155,7 @@ const Overview: React.FC<OverviewProps> = props => {
         cancelHandler={() => setCreateListVisible(false)}
         finishHandler={createListHandler}
       />
-      <CreateTaskModal
-        visible={props.createTaskModal.visible}
-        cancelHandler={()=>{
-          props.dispatch({
-            type:'overview/setCreateTaskModal',
-            payload:{
-              listId:0,
-              visible:false
-            }
-          })
-        }}
-        finishHandler={createTaskHandler}
-      />
+      <Drawer visible={true} mask={false} />
     </Card>
   );
 };
@@ -183,7 +165,6 @@ const mapStateToProps = state => {
     dataSource: state.overview.columnsList,
     trigger: state.overview.trigger,
     progress: state.overview.progress,
-    createTaskModal:state.overview.createTaskModal
   };
 };
 export default connect(mapStateToProps)(Overview);

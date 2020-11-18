@@ -1,21 +1,19 @@
 import { Reducer } from 'umi';
-import { ColumnsInfo,ProgressInfo,CreateTaskModalInfo } from './data';
+import { ColumnsInfo, ProgressInfo } from './data';
 
 export interface ModelState {
-  columnsList: ColumnsInfo[]
-  trigger: boolean
-  progress: ProgressInfo
-  createTaskModal:CreateTaskModalInfo
+  columnsList: ColumnsInfo[];
+  trigger: boolean;
+  progress: ProgressInfo;
 }
 
 export interface ModelType {
   namespace: 'overview';
   state: ModelState;
   reducers: {
-    setColumnsList: Reducer<ModelState>,
-    setTrigger: Reducer<ModelState>,
-    setProgress: Reducer<ModelState>,
-    setCreateTaskModal: Reducer<ModelState>,
+    setColumnsList: Reducer<ModelState>;
+    setTrigger: Reducer<ModelState>;
+    setProgress: Reducer<ModelState>;
   };
 }
 
@@ -28,10 +26,6 @@ const Model: ModelType = {
       total: 0,
       finish: 0,
     },
-    createTaskModal:{
-      visible:false,
-      listId:0
-    }
   },
   reducers: {
     setColumnsList(state, action) {
@@ -42,9 +36,6 @@ const Model: ModelType = {
     },
     setProgress(state, action) {
       return { ...state, progress: action.payload };
-    },
-    setCreateTaskModal(state, action) {
-      return { ...state, createTaskModal: action.payload };
     },
   },
 };
