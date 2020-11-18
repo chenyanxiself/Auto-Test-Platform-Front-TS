@@ -1,43 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Menu } from 'antd';
 import { BorderOutlined, CheckSquareOutlined } from '@ant-design/icons';
-import { RowInfo } from '@/pages/project/overview/data';
-import ex from 'umi/dist';
+import { TaskInfo } from '@/pages/project/overview/data';
+import { connect, Dispatch } from 'umi';
+import { ColumnsInfo } from '../../data';
 
 interface StatusMenuProps {
-  row: RowInfo
+  row: TaskInfo;
+  dataSource: ColumnsInfo[];
+  dispatch: Dispatch;
 }
 
-const StatusMenu: React.FC<StatusMenuProps> = (props) => {
+const StatusMenu: React.FC<StatusMenuProps> = props => {
   const [isStatusHover, setStatusHover] = useState(false);
-  const [status, setStatus] = useState<number | undefined>(undefined);
 
-  useEffect(() => {
-    setStatus(props.row.status);
-  }, [props.row.status]);
+  const { status } = props.row;
 
   const statusEnum = {
-    0: <span style={{color:'red'}}><BorderOutlined />未完成</span>,
-    1: <span style={{color:'green'}}><CheckSquareOutlined />已完成</span>,
+    1: (
+      <span style={{ color: 'green' }}>
+        <CheckSquareOutlined />
+        已完成
+      </span>
+    ),
+    2: (
+      <span style={{ color: 'red' }}>
+        <BorderOutlined />
+        未完成
+      </span>
+    ),
   };
 
   const clickHandler = ({ key }) => {
-    console.log(key);
-    if (key!==status){
-      setStatus(key)
+    if (key !== status) {
+      //TODO api
+
+      const newData = [...props.dataSource];
+      for (let i = 0; i < newData.length; i++) {
+        for (let j = 0; j < newData[i].taskList.length; j++) {
+          if (newData[i].taskList[j].id === props.row.id) {
+            newData[i].taskList[j].status = parseInt(key);
+            props.dispatch({
+              type: 'overview/setColumnsList',
+              payload: newData,
+            });
+            return;
+          }
+        }
+      }
     }
   };
 
   const menu = (
     <Menu onClick={clickHandler}>
-      <Menu.Item
-        key={1}
-      >
-        {statusEnum[1]}
-      </Menu.Item>
-      <Menu.Item key={0}>
-        {statusEnum[0]}
-      </Menu.Item>
+      <Menu.Item key={1}>{statusEnum[1]}</Menu.Item>
+      <Menu.Item key={2}>{statusEnum[2]}</Menu.Item>
     </Menu>
   );
 
@@ -58,4 +75,9 @@ const StatusMenu: React.FC<StatusMenuProps> = (props) => {
     </Dropdown>
   );
 };
-export default StatusMenu;
+const mapStateToProps = state => {
+  return {
+    dataSource: state.overview.columnsList,
+  };
+};
+export default connect(mapStateToProps)(StatusMenu);

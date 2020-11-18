@@ -4,15 +4,16 @@ import styles from './index.less';
 import Columns from '@/pages/project/overview/components/columns';
 import { ColumnsInfo } from '../../data';
 import { connect, Dispatch } from 'umi';
-import {updateListSort} from '@/pages/project/overview/service';
+import { updateListSort } from '@/pages/project/overview/service';
+import { message } from 'antd';
 
 interface BoardProps {
-  dataSource: ColumnsInfo[]
-  projectId: number
-  dispatch: Dispatch
+  dataSource: ColumnsInfo[];
+  projectId: number;
+  dispatch: Dispatch;
 }
 
-const Board: React.FC<BoardProps> = (props) => {
+const Board: React.FC<BoardProps> = props => {
   const dragEndHandler = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
     if (!destination) {
@@ -24,18 +25,15 @@ const Board: React.FC<BoardProps> = (props) => {
     ) {
       return;
     }
-    console.log(result);
-    const newList = [...props.dataSource];
+    const newList = Array.from(props.dataSource);
     if (result.type == 'LIST') {
-      const [deleteTask] = newList.find(item => item.title == source.droppableId).taskList.splice(source.index, 1);
-      newList.find(item => item.title == destination.droppableId).taskList.splice(destination.index, 0, deleteTask);
+      const [deleteTask] = newList
+        .find(item => item.title == source.droppableId)
+        .taskList.splice(source.index, 1);
+      newList
+        .find(item => item.title == destination.droppableId)
+        .taskList.splice(destination.index, 0, deleteTask);
     } else {
-      const startId = newList[source.index].id
-      const endId = newList[destination.index].id
-      const res = await updateListSort(props.projectId,startId,endId)
-      if (res.status !==1){
-        return
-      }
       const [deleteList] = newList.splice(source.index, 1);
       newList.splice(destination.index, 0, deleteList);
     }
@@ -43,23 +41,35 @@ const Board: React.FC<BoardProps> = (props) => {
       type: 'overview/setColumnsList',
       payload: newList,
     });
+
+    var res;
+    if (result.type == 'LIST') {
+      res = {};
+    } else {
+      const startId = newList[source.index].id;
+      const endId = newList[destination.index].id;
+      res = await updateListSort(props.projectId, startId, endId);
+    }
+    if (res.status !== 1) {
+      message.warning(res.error);
+    }
   };
 
   const renderChildren = () => {
     return props.dataSource.map((item, index) => {
-      return <Columns
-        columns={item}
-        index={index}
-        key={item.id}
-        projectId={props.projectId}
-      />;
+      return (
+        <Columns
+          columns={item}
+          index={index}
+          key={item.id}
+          projectId={props.projectId}
+        />
+      );
     });
   };
 
   return (
-    <DragDropContext
-      onDragEnd={dragEndHandler}
-    >
+    <DragDropContext onDragEnd={dragEndHandler}>
       <Droppable droppableId="board" direction={'horizontal'} type={'BOARD'}>
         {(provided, snapshot) => (
           <div
@@ -76,7 +86,7 @@ const Board: React.FC<BoardProps> = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     dataSource: state.overview.columnsList,
   };
