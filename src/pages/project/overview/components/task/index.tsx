@@ -75,7 +75,7 @@ const Task: React.FC<TaskProps> = (props) => {
             {renderIcon()}
           </div>
           <div className={styles.bottom}>
-            <StatusMenu row={props.task} />
+            <StatusMenu row={props.task} projectId={props.projectId}/>
             <Tooltip title={props.task.creator.cname}>
               <Avatar
                 className={styles.avatar}

@@ -41,7 +41,10 @@ export default  {
   deleteProjectCaseUrl:'/project/case/deleteProjectCase',
   getWorkstationProjectsUrl:'/workstation/getWorkstationProjects',
   getTaskByConditionUrl:'/project/overview/getTaskByCondition',
+  getProjectProgressUrl:'/project/overview/getProjectProgress',
   deleteTaskListUrl:'/project/overview/deleteTaskList',
   deleteTaskUrl:'/project/overview/deleteTask',
-  updateListSortUrl:'/project/overview/updateListSort'
+  updateListSortUrl:'/project/overview/updateListSort',
+  updateTaskSortUrl:'/project/overview/updateTaskSort',
+  updateTaskUrl:'/project/overview/updateTask',
 }

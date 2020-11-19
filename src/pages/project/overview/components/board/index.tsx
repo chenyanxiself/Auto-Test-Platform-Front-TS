@@ -4,7 +4,7 @@ import styles from './index.less';
 import Columns from '@/pages/project/overview/components/columns';
 import { ColumnsInfo } from '../../data';
 import { connect, Dispatch } from 'umi';
-import { updateListSort } from '@/pages/project/overview/service';
+import { updateListSort, updateTaskSort } from '@/pages/project/overview/service';
 import { message } from 'antd';
 
 interface BoardProps {
@@ -25,30 +25,29 @@ const Board: React.FC<BoardProps> = props => {
     ) {
       return;
     }
+
     const newList = Array.from(props.dataSource);
-    if (result.type == 'LIST') {
-      const [deleteTask] = newList
-        .find(item => item.title == source.droppableId)
-        .taskList.splice(source.index, 1);
-      newList
-        .find(item => item.title == destination.droppableId)
-        .taskList.splice(destination.index, 0, deleteTask);
+    let res;
+    if (result.type === 'LIST') {
+      const startList = newList.find(item => item.title == source.droppableId);
+      const endList = newList.find(item => item.title == destination.droppableId);
+      const startListId = startList.id;
+      const endListId = endList.id;
+      const [deleteTask] = startList.taskList.splice(source.index, 1);
+      endList.taskList.splice(destination.index, 0, deleteTask);
+      props.dispatch({
+        type: 'overview/setColumnsList',
+        payload: newList,
+      });
+      res = await updateTaskSort(props.projectId, startListId, endListId, source.index, destination.index);
     } else {
       const [deleteList] = newList.splice(source.index, 1);
       newList.splice(destination.index, 0, deleteList);
-    }
-    props.dispatch({
-      type: 'overview/setColumnsList',
-      payload: newList,
-    });
-
-    var res;
-    if (result.type == 'LIST') {
-      res = {};
-    } else {
-      const startId = newList[source.index].id;
-      const endId = newList[destination.index].id;
-      res = await updateListSort(props.projectId, startId, endId);
+      props.dispatch({
+        type: 'overview/setColumnsList',
+        payload: newList,
+      });
+      res = await updateListSort(props.projectId, source.index, destination.index);
     }
     if (res.status !== 1) {
       message.warning(res.error);

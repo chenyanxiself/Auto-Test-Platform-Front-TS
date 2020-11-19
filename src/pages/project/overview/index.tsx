@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Board from '@/pages/project/overview/components/board';
-import { connect } from 'umi';
-import { getTaskByCondition } from '@/pages/project/overview/service';
+import { connect, Dispatch } from 'umi';
+import { getTaskByCondition, getProjectProgress } from '@/pages/project/overview/service';
 import { Button, Card, message, Progress, Select } from 'antd';
 import { ContactsOutlined, CarOutlined, PlusOutlined } from '@ant-design/icons';
 import styles from './index.less';
-import { ColumnsInfo } from './data';
+import { ColumnsInfo ,ProgressInfo} from './data';
 
 const tabList = [
   {
@@ -28,64 +28,17 @@ const tabList = [
   },
 ];
 
-const res = {
-  status: 1,
-  error: '',
-  data: [
-    {
-      id: 1,
-      title: '测试1',
-      sort: 1,
-      taskList: [
-        {
-          id: 1,
-          title: 'task1',
-          sort: 1,
-          status: 2,
-          creator: {
-            id: 1,
-            cname: '管理员',
-          },
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: '测试2',
-      sort: 2,
-      taskList: [
-        {
-          id: 2,
-          title: 'task2',
-          sort: 1,
-          status: 1,
-          creator: {
-            id: 1,
-            cname: '管理员',
-          },
-        },
-        {
-          id: 3,
-          title: 'task3',
-          sort: 2,
-          status: 1,
-          creator: {
-            id: 1,
-            cname: '管理员',
-          },
-        },
-      ],
-    },
-  ],
-};
 interface OverviewProps {
   dataSource: ColumnsInfo[];
   trigger: boolean;
+  progress: ProgressInfo
+  dispatch: Dispatch
+
   [name: string]: any;
 }
 
 const Overview: React.FC<OverviewProps> = props => {
-  const [taskCreatedType, setTaskCreatedType] = useState(1);
+  const [taskRelationType, setTaskRelationType] = useState(1);
   const [taskFilterStatus, setTaskFilterStatus] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const projectId = parseInt(props.match.params.id);
@@ -93,24 +46,30 @@ const Overview: React.FC<OverviewProps> = props => {
   const selectHandler = key => {
     setTaskFilterStatus(key);
   };
-  const getTaskPercentage = () => {
-    var finishedCount = 0;
-    var totalCount = 0;
-    props.dataSource.forEach(listItem => {
-      listItem.taskList.forEach(item => {
-        totalCount += 1;
-        if (item.status === 1) {
-          finishedCount += 1;
-        }
+
+  const getProgress = async () => {
+    const res = await getProjectProgress(projectId);
+    if (res.status === 1) {
+      props.dispatch({
+        type: 'overview/setProgress',
+        payload: {
+          finish: res.data.finish,
+          total: res.data.total,
+        },
       });
-    });
-    return Math.round((finishedCount / totalCount) * 100);
+    } else {
+      message.warning(res.error);
+    }
   };
+
+  useEffect(() => {
+    getProgress();
+  }, []);
 
   const extra = (
     <div className={styles.extra}>
       <Progress
-        percent={getTaskPercentage()}
+        percent={Math.round((props.progress.finish / props.progress.total) * 100)}
         status="active"
         className={styles.progress}
       />
@@ -123,13 +82,14 @@ const Overview: React.FC<OverviewProps> = props => {
         <Select.Option value={1}>已完成</Select.Option>
         <Select.Option value={2}>未完成</Select.Option>
       </Select>
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => {}} />
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => {
+      }} />
     </div>
   );
 
   const getData = async () => {
     setIsLoading(true);
-    // const res = await getTaskByCondition(projectId);
+    const res = await getTaskByCondition(projectId, null, taskRelationType, taskFilterStatus);
     if (res.status == 1) {
       props.dispatch({
         type: 'overview/setColumnsList',
@@ -143,17 +103,17 @@ const Overview: React.FC<OverviewProps> = props => {
 
   useEffect(() => {
     getData();
-  }, [props.trigger, taskCreatedType]);
+  }, [props.trigger, taskRelationType, taskFilterStatus]);
 
   const tabChangeHandler = key => {
-    setTaskCreatedType(parseInt(key));
+    setTaskRelationType(parseInt(key));
   };
 
   return (
     <Card
       tabList={tabList}
       onTabChange={key => tabChangeHandler(key)}
-      activeTabKey={taskCreatedType.toString()}
+      activeTabKey={taskRelationType.toString()}
       bordered={false}
       loading={isLoading}
       bodyStyle={{ padding: 0 }}
@@ -168,6 +128,7 @@ const mapStateToProps = state => {
   return {
     dataSource: state.overview.columnsList,
     trigger: state.overview.trigger,
+    progress: state.overview.progress,
   };
 };
 export default connect(mapStateToProps)(Overview);

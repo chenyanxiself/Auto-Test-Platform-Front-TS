@@ -1,9 +1,10 @@
 import { Reducer } from 'umi';
-import { ColumnsInfo } from './data';
+import { ColumnsInfo,ProgressInfo } from './data';
 
 export interface ModelState {
   columnsList: ColumnsInfo[]
   trigger: boolean
+  progress: ProgressInfo
 }
 
 export interface ModelType {
@@ -12,6 +13,7 @@ export interface ModelType {
   reducers: {
     setColumnsList: Reducer<ModelState>,
     setTrigger: Reducer<ModelState>
+    setProgress: Reducer<ModelState>
   };
 }
 
@@ -20,6 +22,10 @@ const Model: ModelType = {
   state: {
     columnsList: [],
     trigger: true,
+    progress: {
+      total: 0,
+      finish: 0,
+    },
   },
   reducers: {
     setColumnsList(state, action) {
@@ -27,6 +33,9 @@ const Model: ModelType = {
     },
     setTrigger(state, action) {
       return { ...state, trigger: !state.trigger };
+    },
+    setProgress(state, action) {
+      return { ...state, progress: action.payload };
     },
   },
 };

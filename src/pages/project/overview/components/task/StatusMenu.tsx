@@ -1,20 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown, Menu, message } from 'antd';
 import { BorderOutlined, CheckSquareOutlined } from '@ant-design/icons';
 import { TaskInfo } from '@/pages/project/overview/data';
 import { connect, Dispatch } from 'umi';
-import { ColumnsInfo } from '../../data';
+import { ColumnsInfo, ProgressInfo } from '../../data';
+import {updateTask} from '../../service'
 
 interface StatusMenuProps {
   row: TaskInfo;
   dataSource: ColumnsInfo[];
+  progress: ProgressInfo
   dispatch: Dispatch;
+  projectId:number
 }
 
 const StatusMenu: React.FC<StatusMenuProps> = props => {
   const [isStatusHover, setStatusHover] = useState(false);
+  const [selectedKey, setSelectedKey] = useState(undefined);
 
-  const { status } = props.row;
+  useEffect(()=>{
+    setSelectedKey(props.row.status)
+  },[props.row.status])
 
   const statusEnum = {
     1: (
@@ -31,28 +37,28 @@ const StatusMenu: React.FC<StatusMenuProps> = props => {
     ),
   };
 
-  const clickHandler = ({ key }) => {
-    if (key !== status) {
-      //TODO api
-
-      const newData = [...props.dataSource];
-      for (let i = 0; i < newData.length; i++) {
-        for (let j = 0; j < newData[i].taskList.length; j++) {
-          if (newData[i].taskList[j].id === props.row.id) {
-            newData[i].taskList[j].status = parseInt(key);
-            props.dispatch({
-              type: 'overview/setColumnsList',
-              payload: newData,
-            });
-            return;
-          }
-        }
+  const clickHandler = async({ key }) => {
+    key = parseInt(key)
+    if (key !== selectedKey) {
+      const res = await updateTask(props.projectId,props.row.id,key)
+      if (res.status!==1){
+        return message.warning(res.error)
       }
+      let finish = props.progress.finish;
+      key === 1 ? finish += 1 : finish -= 1;
+      props.dispatch({
+        type: 'overview/setProgress',
+        payload: {
+          ...props.progress,
+          finish,
+        },
+      });
+      setSelectedKey(key)
     }
   };
 
   const menu = (
-    <Menu onClick={clickHandler}>
+    <Menu onClick={clickHandler} selectedKeys={[selectedKey]}>
       <Menu.Item key={1}>{statusEnum[1]}</Menu.Item>
       <Menu.Item key={2}>{statusEnum[2]}</Menu.Item>
     </Menu>
@@ -70,7 +76,7 @@ const StatusMenu: React.FC<StatusMenuProps> = props => {
         onMouseOver={() => setStatusHover(true)}
         onMouseLeave={() => setStatusHover(false)}
       >
-        {statusEnum[status]}
+        {statusEnum[selectedKey]}
       </div>
     </Dropdown>
   );
@@ -78,6 +84,7 @@ const StatusMenu: React.FC<StatusMenuProps> = props => {
 const mapStateToProps = state => {
   return {
     dataSource: state.overview.columnsList,
+    progress: state.overview.progress,
   };
 };
 export default connect(mapStateToProps)(StatusMenu);
