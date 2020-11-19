@@ -16,12 +16,14 @@ interface TaskProps {
   index: number;
   dispatch: Dispatch;
   projectId: number;
+  listId: number;
 }
 
 const Task: React.FC<TaskProps> = props => {
   const [isHover, setHover] = useState(false);
 
-  const deleteHandler = async () => {
+  const deleteHandler = async e => {
+    e.stopPropagation();
     Modal.confirm({
       title: '是否确认删除?',
       icon: <ExclamationCircleOutlined />,
@@ -60,7 +62,10 @@ const Task: React.FC<TaskProps> = props => {
     });
   };
   return (
-    <Draggable draggableId={props.task.id.toString()} index={props.index}>
+    <Draggable
+      draggableId={props.listId.toString() + props.task.id.toString()}
+      index={props.index}
+    >
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -77,14 +82,16 @@ const Task: React.FC<TaskProps> = props => {
           </div>
           <div className={styles.bottom}>
             <StatusMenu row={props.task} projectId={props.projectId} />
-            <Tooltip title={props.task.creator.cname}>
-              <Avatar className={styles.avatar}>
-                {props.task.creator.cname.substring(
-                  props.task.creator.cname.length - 2,
-                  props.task.creator.cname.length,
-                )}
-              </Avatar>
-            </Tooltip>
+            <div onClick={e => e.stopPropagation()}>
+              <Tooltip title={props.task.creator.cname}>
+                <Avatar className={styles.avatar}>
+                  {props.task.creator.cname.substring(
+                    props.task.creator.cname.length - 2,
+                    props.task.creator.cname.length,
+                  )}
+                </Avatar>
+              </Tooltip>
+            </div>
           </div>
         </div>
       )}

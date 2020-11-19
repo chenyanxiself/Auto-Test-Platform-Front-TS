@@ -46,6 +46,7 @@ const Columns: React.FC<ColumnsProps> = props => {
     if (res.status == 1) {
       setTitleValue(newValue);
       setTitkeEdit(false);
+      message.success('修改成功');
     } else {
       message.warning(res.error);
     }
@@ -149,7 +150,7 @@ const Columns: React.FC<ColumnsProps> = props => {
     }
   };
   return (
-    <Draggable draggableId={props.columns.title} index={props.index}>
+    <Draggable draggableId={props.columns.id.toString()} index={props.index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -175,6 +176,7 @@ const Columns: React.FC<ColumnsProps> = props => {
             taskList={props.columns.taskList}
             title={props.columns.title}
             projectId={props.projectId}
+            listId={props.columns.id}
           />
         </div>
       )}

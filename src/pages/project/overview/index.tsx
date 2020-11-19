@@ -159,6 +159,7 @@ const Overview: React.FC<OverviewProps> = props => {
   };
 
   const drawerVisibleChangeHandler = visible => {
+    console.log(visible);
     if (visible) {
       form.setFieldsValue({
         taskTitle: props.currentTask.title,

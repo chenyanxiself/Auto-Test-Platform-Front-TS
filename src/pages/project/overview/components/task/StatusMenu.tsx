@@ -1,26 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Dropdown, Menu, message } from 'antd';
 import { BorderOutlined, CheckSquareOutlined } from '@ant-design/icons';
 import { TaskInfo } from '@/pages/project/overview/data';
 import { connect, Dispatch } from 'umi';
 import { ColumnsInfo, ProgressInfo } from '../../data';
-import {updateTask} from '../../service'
+import { updateTask } from '../../service';
 
 interface StatusMenuProps {
   row: TaskInfo;
   dataSource: ColumnsInfo[];
-  progress: ProgressInfo
+  progress: ProgressInfo;
   dispatch: Dispatch;
-  projectId:number
+  projectId: number;
 }
 
 const StatusMenu: React.FC<StatusMenuProps> = props => {
   const [isStatusHover, setStatusHover] = useState(false);
-  const [selectedKey, setSelectedKey] = useState(undefined);
-
-  useEffect(()=>{
-    setSelectedKey(props.row.status)
-  },[props.row.status])
 
   const statusEnum = {
     1: (
@@ -37,15 +32,16 @@ const StatusMenu: React.FC<StatusMenuProps> = props => {
     ),
   };
 
-  const clickHandler = async({ key }) => {
-    key = parseInt(key)
-    if (key !== selectedKey) {
-      const res = await updateTask(props.projectId,props.row.id,key)
-      if (res.status!==1){
-        return message.warning(res.error)
+  const clickHandler = async ({ key, domEvent }) => {
+    domEvent.stopPropagation();
+    key = parseInt(key);
+    if (key !== props.row.status) {
+      const res = await updateTask(props.projectId, props.row.id, key);
+      if (res.status !== 1) {
+        return message.warning(res.error);
       }
       let finish = props.progress.finish;
-      key === 1 ? finish += 1 : finish -= 1;
+      key === 1 ? (finish += 1) : (finish -= 1);
       props.dispatch({
         type: 'overview/setProgress',
         payload: {
@@ -53,19 +49,32 @@ const StatusMenu: React.FC<StatusMenuProps> = props => {
           finish,
         },
       });
-      setSelectedKey(key)
+      const newData = [...props.dataSource];
+      for (let i = 0; i < newData.length; i++) {
+        let targetRow = newData[i].taskList.find(
+          item => item.id === props.row.id,
+        );
+        if (targetRow) {
+          targetRow.status = key;
+          break;
+        }
+      }
+      props.dispatch({
+        type: 'overview/setColumnsList',
+        payload: newData,
+      });
     }
   };
 
   const menu = (
-    <Menu onClick={clickHandler} selectedKeys={[selectedKey]}>
+    <Menu onClick={clickHandler} selectedKeys={[props.row.status.toString()]}>
       <Menu.Item key={1}>{statusEnum[1]}</Menu.Item>
       <Menu.Item key={2}>{statusEnum[2]}</Menu.Item>
     </Menu>
   );
 
   return (
-    <Dropdown overlay={menu}>
+    <Dropdown overlay={menu} trigger={['click']}>
       <div
         style={{
           backgroundColor: isStatusHover ? 'lightgray' : null,
@@ -75,8 +84,9 @@ const StatusMenu: React.FC<StatusMenuProps> = props => {
         }}
         onMouseOver={() => setStatusHover(true)}
         onMouseLeave={() => setStatusHover(false)}
+        onClick={e => e.stopPropagation()}
       >
-        {statusEnum[selectedKey]}
+        {statusEnum[props.row.status]}
       </div>
     </Dropdown>
   );
