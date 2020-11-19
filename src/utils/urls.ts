@@ -47,4 +47,7 @@ export default  {
   updateListSortUrl:'/project/overview/updateListSort',
   updateTaskSortUrl:'/project/overview/updateTaskSort',
   updateTaskUrl:'/project/overview/updateTask',
+  updateListUrl:'/project/overview/updateList',
+  createListUrl:'/project/overview/createList',
+  createTaskUrl:'/project/overview/createTask',
 }

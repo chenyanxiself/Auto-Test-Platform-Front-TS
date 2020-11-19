@@ -2,23 +2,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import styles from './index.less';
 import { ColumnsInfo } from '@/pages/project/overview/data';
-import List from '../list';
+import List from '../taskList';
 import { CloseCircleOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, message, Modal } from 'antd';
-import { deleteProjectCase } from '@/pages/project/case/service';
 import { connect, Dispatch } from 'umi';
-import { deleteTaskList } from '@/pages/project/overview/service';
+import { deleteTaskList, updateList, createTask } from '@/pages/project/overview/service';
+import CreateTaskModal from '@/pages/project/overview/components/createTaskModal';
 
 interface ColumnsProps {
   columns: ColumnsInfo
   index: number
   dispatch: Dispatch
   projectId: number
+  createTaskVisible: boolean
 }
 
 const Columns: React.FC<ColumnsProps> = (props) => {
   const [isTitleEdit, setTitkeEdit] = useState(false);
   const [titleValue, setTitleValue] = useState('');
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     setTitleValue(props.columns.title);
@@ -33,10 +35,16 @@ const Columns: React.FC<ColumnsProps> = (props) => {
     }
   }, [isTitleEdit]);
 
-  const saveTitle = (e) => {
+  const saveTitle = async (e) => {
     const newValue = e.target.value;
-    setTitleValue(newValue);
-    setTitkeEdit(false);
+    const res = await updateList(props.projectId, props.columns.id, newValue);
+    if (res.status == 1) {
+      setTitleValue(newValue);
+      setTitkeEdit(false);
+    } else {
+      message.warning(res.error);
+    }
+
   };
 
   const deleteHandler = async () => {
@@ -109,9 +117,15 @@ const Columns: React.FC<ColumnsProps> = (props) => {
             </div>
             <div
               className={styles.plus}
-              onClick={() => props.dispatch({
-                type: 'overview/setTrigger',
-              })}
+              onClick={() => {
+                props.dispatch({
+                  type:'overview/setCreateTaskModal',
+                  payload:{
+                    visible:true,
+                    listId:props.columns.id
+                  }
+                })
+              }}
             >
               <PlusOutlined style={{ fontSize: 20 }} />
             </div>
@@ -126,5 +140,12 @@ const Columns: React.FC<ColumnsProps> = (props) => {
     </Draggable>
   );
 };
-
-export default connect()(Columns);
+const mapStateToProps = state => {
+  return {
+    // dataSource: state.overview.columnsList,
+    // trigger: state.overview.trigger,
+    // progress: state.overview.progress,
+    createTaskVisible: state.overview.createTaskVisible,
+  };
+};
+export default connect(mapStateToProps)(Columns);

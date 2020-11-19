@@ -25,6 +25,11 @@ export const deleteTask = (id, projectId) => {
   return request(urls.deleteTaskUrl, { method: 'post', data });
 };
 
+export const updateList = (projectId, listId, title) => {
+  let data = { list_id: listId, project_id: projectId, title };
+  return request(urls.updateListUrl, { method: 'post', data });
+};
+
 export const updateTask = (projectId, taskId, status) => {
   let data = { task_id: taskId, project_id: projectId, status };
   return request(urls.updateTaskUrl, { method: 'post', data });
@@ -45,3 +50,22 @@ export const updateTaskSort = (projectId, startListId, endListId, startIndex, en
   };
   return request(urls.updateTaskSortUrl, { method: 'post', data });
 };
+
+export const createList = (projectId, title) => {
+  let data = {
+    project_id: projectId,
+    title,
+  };
+  return request(urls.createListUrl, { method: 'post', data });
+};
+
+export const createTask = (projectId, listId, title, description) => {
+  let data = {
+    project_id: projectId,
+    list_id:listId,
+    title,
+    description
+  };
+  return request(urls.createTaskUrl, { method: 'post', data });
+};
+

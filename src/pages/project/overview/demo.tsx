@@ -17,7 +17,7 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 /**
- * Moves an item from one list to another list.
+ * Moves an item from one taskList to another taskList.
  */
 const move = (source, destination, droppableSource, droppableDestination) => {
   const sourceClone = Array.from(source);

@@ -8,11 +8,11 @@ import styles from '@/pages/project/index.less';
 const tabList = [
   {
     key: '1',
-    tab: '进行中',
+    tab: <span className={styles.tabs}>进行中</span>,
   },
   {
     key: '0',
-    tab: '已归档',
+    tab: <span className={styles.tabs}>已归档</span>,
   },
 ];
 
@@ -77,10 +77,10 @@ export default (props) => {
   return (
     <React.Fragment>
       <Card
-        title={'项目列表'}
+        title={<span style={{fontWeight:700,fontSize:16}}>项目列表</span>}
         tabList={tabList}
         onTabChange={key => tabChangeHandler(key)}
-        extra={extra}
+        tabBarExtraContent={extra}
         bordered={false}
         loading={isLoading}
       >

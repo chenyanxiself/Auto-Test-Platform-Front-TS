@@ -210,7 +210,6 @@ const ModuleTree = (props) => {
     } else {
       message.warning(res.error);
     }
-
   };
 
   const renderTree = () => {
@@ -271,7 +270,7 @@ const ModuleTree = (props) => {
             <Form.Item
               wrapperCol={{ offset: 5 }}
             >
-              <Button htmlType={'submit'} type={'primary'}>提交</Button>
+              <Button htmlType={'submit'} type={'primary'}>创建</Button>
             </Form.Item>
           </Form>
         </Modal>

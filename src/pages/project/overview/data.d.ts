@@ -24,3 +24,8 @@ export interface ProgressInfo {
   finish: number
   total: number
 }
+
+export interface CreateTaskModalInfo {
+  visible: boolean
+  listId: number
+}
