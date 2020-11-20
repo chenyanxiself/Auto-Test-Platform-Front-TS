@@ -22,9 +22,9 @@ const List: React.FC<ListProps> = props => {
               : null,
             border: snapshot.isDraggingOver ? '2px dashed #057AFF' : null,
             borderRadius: 5,
-            // height: 'calc(100% - 60px)',
-            overflowY: 'scroll',
-            height: 800,
+            overflowY: 'auto',
+            overflowAnchor:'none',
+            height: 400,
           }}
         >
           {props.taskList.map((item, index) => {

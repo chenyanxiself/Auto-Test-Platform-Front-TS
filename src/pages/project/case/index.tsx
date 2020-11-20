@@ -213,7 +213,6 @@ const Case = (props) => {
       </div>
       <div className={styles.right}>
         <Card
-          style={{ width: '100%', height: '100%' }}
           bordered={false}
           title={title}
         >

@@ -37,7 +37,7 @@ const Index= (props) => {
             margin: '20px',
             backgroundColor: '#fff',
             padding: '10px 10px',
-            overflowY: 'scroll',
+            overflowY: 'auto',
           }}>
             {props.children}
           </Content>
