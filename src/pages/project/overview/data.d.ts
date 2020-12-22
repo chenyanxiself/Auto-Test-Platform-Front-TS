@@ -16,6 +16,9 @@ export interface TaskInfo {
     cname: string;
     [name: string]: any;
   };
+  priority: number,
+  follower?: number[],
+  description?: string,
 
   [name: string]: any;
 }

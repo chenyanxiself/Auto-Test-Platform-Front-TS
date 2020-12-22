@@ -30,8 +30,8 @@ export const updateList = (projectId, listId, title) => {
   return request(urls.updateListUrl, { method: 'post', data });
 };
 
-export const updateTask = (projectId, taskId, status) => {
-  let data = { task_id: taskId, project_id: projectId, status };
+export const updateTask = (projectId, taskId, status, priority, follower, description) => {
+  let data = { task_id: taskId, project_id: projectId, status, priority, follower, description };
   return request(urls.updateTaskUrl, { method: 'post', data });
 };
 
@@ -62,9 +62,9 @@ export const createList = (projectId, title) => {
 export const createTask = (projectId, listId, title, description) => {
   let data = {
     project_id: projectId,
-    list_id:listId,
+    list_id: listId,
     title,
-    description
+    description,
   };
   return request(urls.createTaskUrl, { method: 'post', data });
 };

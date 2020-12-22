@@ -10,6 +10,7 @@ import StatusMenu from '@/pages/project/overview/components/task/StatusMenu';
 import { Avatar, message, Modal, Tooltip } from 'antd';
 import { deleteTask } from '@/pages/project/overview/service';
 import { connect, Dispatch } from 'umi';
+import PriorityMenu from '@/pages/project/overview/components/task/PriorityMenu';
 
 interface TaskProps {
   task: TaskInfo;
@@ -82,15 +83,20 @@ const Task: React.FC<TaskProps> = props => {
           </div>
           <div className={styles.bottom}>
             <StatusMenu row={props.task} projectId={props.projectId} />
-            <div onClick={e => e.stopPropagation()}>
-              <Tooltip title={props.task.creator.cname}>
-                <Avatar className={styles.avatar}>
-                  {props.task.creator.cname.substring(
-                    props.task.creator.cname.length - 2,
-                    props.task.creator.cname.length,
-                  )}
-                </Avatar>
-              </Tooltip>
+            <div className={styles.bottomRight}>
+              <div style={{marginRight:5}}>
+                <PriorityMenu row={props.task} projectId={props.projectId} />
+              </div>
+              <div onClick={e => e.stopPropagation()}>
+                <Tooltip title={props.task.creator.cname}>
+                  <Avatar className={styles.avatar}>
+                    {props.task.creator.cname.substring(
+                      props.task.creator.cname.length - 2,
+                      props.task.creator.cname.length,
+                    )}
+                  </Avatar>
+                </Tooltip>
+              </div>
             </div>
           </div>
         </div>

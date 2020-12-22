@@ -7,7 +7,7 @@ import { getStrDataFromJson, getJsonDataFromStr } from '@/utils/common';
 import { singleCaseDebug } from '@/pages/project/apicase/service';
 import { ApiCaseInfo } from '@/pages/project/apicase/data';
 import { getEnvByProjectId } from '@/pages/project/service';
-import JSONTree from 'react-json-tree';
+import ReactJson from 'react-json-view'
 
 const { TabPane } = Tabs;
 
@@ -248,7 +248,7 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
                   height: 300,
                   overflowY: 'scroll',
                 }}>
-                  <span>{getStrDataFromJson(response.data)}</span>
+                  <span>{response.data}</span>
                 </div>
               </Spin>
             </TabPane>
@@ -262,30 +262,11 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
                   overflowY: 'scroll',
                 }}>
                   <div>
-                    <JSONTree
-                      invertTheme={true}
-                      // hideRoot={true}
-                      data={response.data || {}}
-                      theme={{
-                        scheme: 'london tube',
-                        author: 'jan t. sott',
-                        base00: '#231f20',
-                        base01: '#1c3f95',
-                        base02: '#5a5758',
-                        base03: '#737171',
-                        base04: '#959ca1',
-                        base05: '#d9d8d8',
-                        base06: '#e7e7e8',
-                        base07: '#ffffff',
-                        base08: '#ee2e24',
-                        base09: '#f386a1',
-                        base0A: '#ffd204',
-                        base0B: '#00853e',
-                        base0C: '#85cebc',
-                        base0D: '#009ddc',
-                        base0E: '#98005d',
-                        base0F: '#b06110',
-                      }}
+                    <ReactJson
+                      src={getJsonDataFromStr(response.data)}
+                      name={false}
+                      displayDataTypes={false}
+                      displayObjectSize={false}
                     />
                   </div>
                 </div>

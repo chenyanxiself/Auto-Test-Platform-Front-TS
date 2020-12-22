@@ -5,7 +5,6 @@ import {
   getTaskByCondition,
   getProjectProgress,
   createList,
-  createTask,
 } from '@/pages/project/overview/service';
 import {
   Button,
@@ -16,8 +15,9 @@ import {
   Drawer,
   Form,
   Input,
+  Spin,
 } from 'antd';
-import { ContactsOutlined, CarOutlined, PlusOutlined } from '@ant-design/icons';
+import { ContactsOutlined, CarOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import { ColumnsInfo, ProgressInfo } from './data';
 import CreateListModal from '@/pages/project/overview/components/createListModal';
@@ -159,20 +159,19 @@ const Overview: React.FC<OverviewProps> = props => {
   };
 
   const drawerVisibleChangeHandler = visible => {
-    console.log(visible);
     if (visible) {
+      setDrawerLoading(true);
       form.setFieldsValue({
         taskTitle: props.currentTask.title,
         description: props.currentTask.description,
       });
+      setDrawerLoading(false);
     } else {
       form.resetFields();
     }
   };
 
   const closeDrawerHandler = () => {
-    console.log(props.currentTask.id);
-    console.log(form.getFieldsValue());
     props.dispatch({
       type: 'overview/setCurrentTask',
       payload: {},
@@ -202,18 +201,23 @@ const Overview: React.FC<OverviewProps> = props => {
         onClose={closeDrawerHandler}
         forceRender={true}
         title={'任务详情'}
-        width={800}
+        width={'50%'}
       >
-        <div>
-          <Form form={form}>
-            <Form.Item name={'taskTitle'} label={'任务标题'}>
-              <Input />
-            </Form.Item>
-            <Form.Item name={'description'} label={'任务描述'}>
-              <Input />
-            </Form.Item>
-          </Form>
-        </div>
+        <Spin
+          indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+          spinning={isDrawerLoading}
+        >
+          <div>
+            <Form form={form}>
+              <Form.Item name={'taskTitle'} label={'任务标题'}>
+                <Input />
+              </Form.Item>
+              <Form.Item name={'description'} label={'任务描述'}>
+                <Input />
+              </Form.Item>
+            </Form>
+          </div>
+        </Spin>
       </Drawer>
     </Card>
   );

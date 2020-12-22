@@ -36,7 +36,7 @@ const StatusMenu: React.FC<StatusMenuProps> = props => {
     domEvent.stopPropagation();
     key = parseInt(key);
     if (key !== props.row.status) {
-      const res = await updateTask(props.projectId, props.row.id, key);
+      const res = await updateTask(props.projectId, props.row.id, key, props.row.priority, props.row.follower, props.row.description);
       if (res.status !== 1) {
         return message.warning(res.error);
       }
