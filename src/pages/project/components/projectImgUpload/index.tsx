@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, Modal, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { uploadProjectImgApi,delProjectImgApi } from '@/pages/project/service'
-interface UploadInfo{
-  previewImage:string
-  previewTitle:string
-  fileList:any[]
-}
 
 function getBase64(file) {
   return new Promise((resolve, reject) => {
@@ -17,70 +11,74 @@ function getBase64(file) {
   });
 }
 
-const ProjectImgUpload=(props)=>{
-  const [uploadInfo,setUploadInfo]=useState<UploadInfo>({
-    previewImage:'',
-    previewTitle:'',
-    fileList:[]
-  })
-  const [isModalVisible,setIsModalVisible] = useState(false)
+interface ProjectImgUpload {
+  customRequestHandle: (f: any) => void
+  removeHandle: (f: any) => Promise<boolean>
+  value?: any
+  onChange?: any
+  maxLength?: number
+  onSave?: any
+}
+
+const ProjectImgUpload: React.FC<ProjectImgUpload> = (props) => {
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewTitle, setPreviewTitle] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+
   const handleCancel = () => {
-    setIsModalVisible(false)
+    setIsModalVisible(false);
   };
 
   const handlePreview = async file => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
-
-    setUploadInfo(state=>({...state,
-      previewImage: file.url || file.preview,
-      previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
-    }));
-    setIsModalVisible(true)
+    setPreviewImage(file.url || file.preview);
+    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+    setIsModalVisible(true);
   };
+
   const handleChange = ({ file, fileList }) => {
     if (file.status === 'done') {
-      const fileUid = file.uid
-      let targetFileInFileList = fileList.find(file => file.uid === fileUid)
-      targetFileInFileList.name = file.response.data.fileName
-      targetFileInFileList.url = file.response.data.url
-      props.onChange(targetFileInFileList.url)
-      message.success('上传图片成功')
-      setUploadInfo(state=>({...state,fileList}))
+      const fileUid = file.uid;
+      let targetFileInFileList = fileList.find(f => f.uid === fileUid);
+      targetFileInFileList.name = file.response.data.fileName;
+      targetFileInFileList.url = file.response.data.url;
+      targetFileInFileList.id = file.response.data.id;
+      if (props.onSave) {
+        props.onSave(fileList);
+      } else {
+        props.onChange(fileList);
+      }
+      message.success('上传图片成功');
     } else if (file.status === 'error') {
-      setUploadInfo(state=>({...state,fileList:[]}))
-      message.error('上传图片失败')
+      message.error('上传图片失败');
     }
   };
 
-  const handleRemove = async (file) => {
-    const res = await delProjectImgApi(file.name)
-    if(res.status===1){
-      message.success('删除图片成功')
-      setUploadInfo(state=>({...state,fileList:[]}))
-      props.onChange(null)
-      return true
-    }else{
-      message.error('删除图片失败: '+res.error)
-      return false
-    }
-  }
-  const onCustomRequest = async (file) => {
-    const res = await uploadProjectImgApi(file)
-    if (res.status === 1) {
-      file.onSuccess(res)
-    } else {
-      file.onError()
-    }
-  }
   const uploadButton = (
     <div>
       <PlusOutlined />
       <div className="ant-upload-text">Upload</div>
     </div>
   );
-
+  const onCustomRequest = async (file) => {
+    await props.customRequestHandle(file);
+  };
+  const handleRemove = async (file) => {
+    const isSuccess = await props.removeHandle(file);
+    if (isSuccess) {
+      const newFileList = props.value.filter(f => f.id != file.id);
+      if (props.onSave) {
+        props.onSave(newFileList);
+      } else {
+        props.onChange(newFileList);
+      }
+    }
+  };
+  const maxLength = props.maxLength ? props.maxLength : 1;
+  const valueLength = props.value ? props.value.length : 0;
   return (
     <div className="clearfix">
       <Upload
@@ -88,23 +86,23 @@ const ProjectImgUpload=(props)=>{
         customRequest={onCustomRequest}
         listType="picture-card"
         name='projectImg'   //后台接受文件的参数名
-        fileList={uploadInfo.fileList}
+        fileList={props.value}
         onPreview={handlePreview}
         onChange={handleChange}
         onRemove={handleRemove}
       >
-        {uploadInfo.fileList.length >= 1 ? null : uploadButton}
+        {valueLength >= maxLength ? null : uploadButton}
       </Upload>
       <Modal
         visible={isModalVisible}
-        title={uploadInfo.previewTitle}
+        title={previewTitle}
         footer={null}
         onCancel={handleCancel}
       >
-        <img alt="example" style={{ width: '100%' }} src={uploadInfo.previewImage} />
+        <img alt="example" style={{ width: '100%' }} src={previewImage} />
       </Modal>
     </div>
   );
-}
+};
 
-export default ProjectImgUpload
+export default ProjectImgUpload;

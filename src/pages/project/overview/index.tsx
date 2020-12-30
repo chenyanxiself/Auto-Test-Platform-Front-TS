@@ -12,19 +12,16 @@ import {
   message,
   Progress,
   Select,
-  Drawer,
-  Form,
-  Input,
-  Spin,
 } from 'antd';
 import { ContactsOutlined, CarOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import { ColumnsInfo, ProgressInfo } from './data';
 import CreateListModal from '@/pages/project/overview/components/createListModal';
+import TaskDrawer from '@/pages/project/overview/components/taskDrawer';
 
 const tabList = [
   {
-    key: '1',
+    key: 'tab-1',
     tab: (
       <span style={{ fontSize: 14 }}>
         <CarOutlined />
@@ -33,7 +30,7 @@ const tabList = [
     ),
   },
   {
-    key: '2',
+    key: 'tab-2',
     tab: (
       <span style={{ fontSize: 14 }}>
         <ContactsOutlined />
@@ -58,10 +55,7 @@ const Overview: React.FC<OverviewProps> = props => {
   const [taskFilterStatus, setTaskFilterStatus] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [createListVisible, setCreateListVisible] = useState(false);
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [isDrawerLoading, setDrawerLoading] = useState(false);
   const projectId = parseInt(props.match.params.id);
-  const [form] = Form.useForm();
 
   const selectHandler = key => {
     setTaskFilterStatus(key);
@@ -134,15 +128,10 @@ const Overview: React.FC<OverviewProps> = props => {
     getProgress();
   }, [props.trigger]);
 
-  useEffect(() => {
-    if (props.currentTask.id) {
-      setDrawerVisible(true);
-    } else {
-      setDrawerVisible(false);
-    }
-  }, [props.currentTask]);
+
+
   const tabChangeHandler = key => {
-    setTaskRelationType(parseInt(key));
+    setTaskRelationType(parseInt(key.split('-')[1]));
   };
 
   const createListHandler = async value => {
@@ -156,26 +145,6 @@ const Overview: React.FC<OverviewProps> = props => {
     } else {
       message.warning(res.error);
     }
-  };
-
-  const drawerVisibleChangeHandler = visible => {
-    if (visible) {
-      setDrawerLoading(true);
-      form.setFieldsValue({
-        taskTitle: props.currentTask.title,
-        description: props.currentTask.description,
-      });
-      setDrawerLoading(false);
-    } else {
-      form.resetFields();
-    }
-  };
-
-  const closeDrawerHandler = () => {
-    props.dispatch({
-      type: 'overview/setCurrentTask',
-      payload: {},
-    });
   };
 
   return (
@@ -195,30 +164,9 @@ const Overview: React.FC<OverviewProps> = props => {
         cancelHandler={() => setCreateListVisible(false)}
         finishHandler={createListHandler}
       />
-      <Drawer
-        visible={drawerVisible}
-        afterVisibleChange={drawerVisibleChangeHandler}
-        onClose={closeDrawerHandler}
-        forceRender={true}
-        title={'任务详情'}
-        width={'50%'}
-      >
-        <Spin
-          indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-          spinning={isDrawerLoading}
-        >
-          <div>
-            <Form form={form}>
-              <Form.Item name={'taskTitle'} label={'任务标题'}>
-                <Input />
-              </Form.Item>
-              <Form.Item name={'description'} label={'任务描述'}>
-                <Input />
-              </Form.Item>
-            </Form>
-          </div>
-        </Spin>
-      </Drawer>
+      <TaskDrawer
+        projectId = {projectId}
+      />
     </Card>
   );
 };
@@ -228,7 +176,6 @@ const mapStateToProps = state => {
     dataSource: state.overview.columnsList,
     trigger: state.overview.trigger,
     progress: state.overview.progress,
-    currentTask: state.overview.currentTask,
   };
 };
 export default connect(mapStateToProps)(Overview);

@@ -8,13 +8,19 @@ import {
   ExclamationCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { Button, Form, Input, message, Modal } from 'antd';
+import { Button, Form, Input, message, Modal, Row, Col } from 'antd';
 import { connect, Dispatch } from 'umi';
 import {
   deleteTaskList,
   updateList,
   createTask,
 } from '@/pages/project/overview/service';
+import ProjectMember from '@/pages/project/components/projectMember';
+import ClickSpan from '@/pages/project/components/clickSpan';
+import PriorityMenu from '@/pages/project/overview/components/task/PriorityMenu';
+import ProjectImgUpload from '@/pages/project/components/projectImgUpload';
+import { uploadTaskImgApi } from '@/pages/project/overview/service';
+import { delProjectImgApi } from '@/pages/project/service';
 
 interface ColumnsProps {
   columns: ColumnsInfo;
@@ -24,28 +30,17 @@ interface ColumnsProps {
 }
 
 const Columns: React.FC<ColumnsProps> = props => {
-  const [isTitleEdit, setTitkeEdit] = useState(false);
   const [titleValue, setTitleValue] = useState('');
 
   useEffect(() => {
     setTitleValue(props.columns.title);
   }, [props.columns.title]);
 
-  const inputRef = useRef();
-
-  useEffect(() => {
-    if (isTitleEdit) {
-      // @ts-ignore
-      inputRef.current.focus();
-    }
-  }, [isTitleEdit]);
-
   const saveTitle = async e => {
     const newValue = e.target.value;
     const res = await updateList(props.projectId, props.columns.id, newValue);
     if (res.status == 1) {
       setTitleValue(newValue);
-      setTitkeEdit(false);
       message.success('修改成功');
     } else {
       message.warning(res.error);
@@ -73,6 +68,27 @@ const Columns: React.FC<ColumnsProps> = props => {
       },
     });
   };
+
+  const customRequestHandle = async (file) => {
+    const res = await uploadTaskImgApi(file, props.projectId);
+    if (res.status === 1) {
+      file.onSuccess(res);
+    } else {
+      file.onError();
+    }
+  };
+
+  const removeHandle = async (file) => {
+    const res = await delProjectImgApi(file.name);
+    if (res.status === 1) {
+      message.success('删除图片成功');
+      return true;
+    } else {
+      message.error(res.error);
+      return false;
+    }
+  };
+
   const [form] = Form.useForm();
   const createTaskModalHandler = () => {
     Modal.confirm({
@@ -84,35 +100,81 @@ const Columns: React.FC<ColumnsProps> = props => {
       width: 800,
       content: (
         <div className={styles.modalBody}>
-          <Form form={form} layout="vertical">
-            <Form.Item
-              name={'taskTitle'}
-              rules={[{ required: true, message: '必填' }]}
-            >
-              <Input
-                placeholder={'请输入任务标题(必填)'}
-                autoComplete={'off'}
-              />
-            </Form.Item>
-            <Form.Item name={'description'} label={'任务描述'}>
-              <Input.TextArea
-                placeholder={'请输入任务描述'}
-                autoComplete={'off'}
-                autoSize={{ minRows: 4, maxRows: 6 }}
-                allowClear={true}
-                maxLength={200}
-              />
-            </Form.Item>
+          <Form form={form} initialValues={{
+            taskPriority: 3,
+            attachment:[]
+          }}>
+            <Row>
+              <Col span={24}>
+                <Form.Item
+                  name={'taskTitle'}
+                  rules={[{ required: true, message: '必填' }]}
+                >
+                  <Input
+                    placeholder={'请输入任务标题(必填)'}
+                    autoComplete={'off'}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name={'taskPriority'}
+                  label={'优先级'}
+                >
+                  <PriorityMenu />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name={'taskFollower'}
+                  label={'关注人'}
+                >
+                  <ProjectMember />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <div style={{ marginBottom: 5 }}>任务描述</div>
+              </Col>
+              <Col span={24}>
+                <Form.Item name={'description'}>
+                  <Input.TextArea
+                    placeholder={'请输入任务描述'}
+                    autoComplete={'off'}
+                    autoSize={{ minRows: 4, maxRows: 6 }}
+                    allowClear={true}
+                    maxLength={200}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <div style={{ marginBottom: 5 }}>附件 (仅支持图片格式)</div>
+              </Col>
+              <Col span={24}>
+                <Form.Item name={'attachment'}>
+                  <ProjectImgUpload
+                    customRequestHandle={customRequestHandle}
+                    removeHandle={removeHandle}
+                    maxLength={3}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
           </Form>
         </div>
       ),
       onOk: async () => {
         const value = await form.validateFields();
+        const attachment = value.attachment ? value.attachment.map(item => item.id) : [];
+        const follower = value.taskFollower ? value.taskFollower.map(item => item.id) : [];
+        const priority = value.taskPriority ? value.taskPriority : 3;
         const res = await createTask(
           props.projectId,
           props.columns.id,
           value.taskTitle,
+          priority,
+          follower,
           value.description,
+          attachment,
         );
         if (res.status === 1) {
           props.dispatch({
@@ -130,25 +192,6 @@ const Columns: React.FC<ColumnsProps> = props => {
     });
   };
 
-  const renderTitle = () => {
-    if (isTitleEdit) {
-      return (
-        <Input
-          className={styles.title}
-          defaultValue={titleValue}
-          onBlur={saveTitle}
-          onPressEnter={saveTitle}
-          ref={inputRef}
-        />
-      );
-    } else {
-      return (
-        <span className={styles.title} onClick={() => setTitkeEdit(true)}>
-          {titleValue}
-        </span>
-      );
-    }
-  };
   return (
     <Draggable draggableId={props.columns.id.toString()} index={props.index}>
       {(provided, snapshot) => (
@@ -163,7 +206,7 @@ const Columns: React.FC<ColumnsProps> = props => {
           }}
         >
           <div className={styles.header}>
-            {renderTitle()}
+            <ClickSpan value={titleValue} onSave={saveTitle} style={{ width: 150 }} />
             <CloseCircleOutlined
               style={{ color: 'red' }}
               onClick={deleteHandler}

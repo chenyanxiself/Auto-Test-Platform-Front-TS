@@ -52,10 +52,14 @@ export default (props) => {
   };
 
   const finishHandler = async (value) => {
+    let projectImg = null;
+    if (value.projectImg) {
+      projectImg = value.projectImg.length != 0 ? value.projectImg[0].id : null;
+    }
     const projectMember = value.projectMember.map(item => {
       return item.id;
     });
-    const res = await createProject({ ...value, projectMember });
+    const res = await createProject({ ...value, projectMember, projectImg });
     if (res.status === 1) {
       message.success('新建项目成功');
       setIsModalVisible(false);
@@ -77,7 +81,7 @@ export default (props) => {
   return (
     <React.Fragment>
       <Card
-        title={<span style={{fontWeight:700,fontSize:16}}>项目列表</span>}
+        title={<span style={{ fontWeight: 700, fontSize: 16 }}>项目列表</span>}
         tabList={tabList}
         onTabChange={key => tabChangeHandler(key)}
         tabBarExtraContent={extra}
@@ -103,7 +107,7 @@ export default (props) => {
                   className={styles.bodyCard}
                   hoverable={true}
                   key={item.id}
-                  cover={<img alt={item.name} src={item.url} className={styles.bodyCardImg} />}
+                  cover={<img alt={item.name} src={item.img.url} className={styles.bodyCardImg} />}
                   onClick={() => {
                     onProjectClick(item);
                   }}

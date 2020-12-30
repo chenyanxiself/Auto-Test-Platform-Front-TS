@@ -30,8 +30,8 @@ export const updateList = (projectId, listId, title) => {
   return request(urls.updateListUrl, { method: 'post', data });
 };
 
-export const updateTask = (projectId, taskId, status, priority, follower, description) => {
-  let data = { task_id: taskId, project_id: projectId, status, priority, follower, description };
+export const updateTask = (projectId, taskId, value, key) => {
+  let data = { task_id: taskId, project_id: projectId, value,key };
   return request(urls.updateTaskUrl, { method: 'post', data });
 };
 
@@ -59,13 +59,39 @@ export const createList = (projectId, title) => {
   return request(urls.createListUrl, { method: 'post', data });
 };
 
-export const createTask = (projectId, listId, title, description) => {
+export const createTask = (projectId, listId, title, priority, follower, description, attachment) => {
   let data = {
     project_id: projectId,
     list_id: listId,
     title,
+    priority,
+    follower,
     description,
+    attachment,
   };
   return request(urls.createTaskUrl, { method: 'post', data });
+};
+
+
+export const uploadTaskImgApi = (data, projectId, taskId = null) => {
+  let form = new FormData();
+  form.append(data.filename, data.file);
+  form.append('project_id', projectId);
+  if (taskId) {
+    form.append('task_id', taskId);
+  }
+  return request(urls.uploadTaskImgUrl, {
+    method: 'post',
+    data: form,
+  });
+};
+
+
+export const getTaskDetail = (projectId, taskId) => {
+  const params = {
+    'project_id': projectId,
+    'task_id': taskId,
+  };
+  return request(urls.getTaskDetailUrl, { method: 'get', params });
 };
 

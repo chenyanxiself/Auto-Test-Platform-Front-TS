@@ -19,6 +19,7 @@ export interface TaskInfo {
   priority: number,
   follower?: number[],
   description?: string,
+  img?: number[],
 
   [name: string]: any;
 }

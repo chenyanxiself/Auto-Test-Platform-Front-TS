@@ -23,7 +23,7 @@ const Base: React.FC<BaseProps> = (props) => {
           disabled: item.id === res.data.creator,
         };
       });
-      setProjectImgUrl(res.data.url);
+      setProjectImgUrl(res.data.img.url);
       form.setFieldsValue({
         projectName: res.data.name,
         projectMember,

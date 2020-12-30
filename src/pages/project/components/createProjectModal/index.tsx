@@ -1,8 +1,9 @@
 import React from 'react';
-import { Modal,Form,Input,Button } from 'antd';
+import { Modal, Form, Input, Button, message } from 'antd';
 import {connect} from 'umi'
 import ProjectMember from '@/pages/project/components/projectMember';
 import ProjectImgUpload from '@/pages/project/components/projectImgUpload';
+import { delProjectImgApi, uploadProjectImgApi } from '@/pages/project/service';
 interface CreateProjectModalProps{
   cancelHandler:()=>void
   isModalVisible:boolean
@@ -18,6 +19,24 @@ const CreateProjectModal:React.FC<CreateProjectModalProps> = (props) => {
     wrapperCol: {
       span: 11
     },
+  }
+  const customRequestHandle = async (file) => {
+    const res = await uploadProjectImgApi(file)
+    if (res.status === 1) {
+      file.onSuccess(res)
+    } else {
+      file.onError()
+    }
+  }
+  const removeHandle = async (file) => {
+    const res = await delProjectImgApi(file.name)
+    if(res.status===1){
+      message.success('删除图片成功')
+      return true
+    }else{
+      message.error('删除图片失败: '+res.error)
+      return false
+    }
   }
   return (
     <Modal
@@ -39,7 +58,8 @@ const CreateProjectModal:React.FC<CreateProjectModalProps> = (props) => {
             cname: props.user.cname,
             briefName: props.user.cname.substring(props.user.cname.length - 2, props.user.cname.length),
             disabled: true,
-          }]
+          }],
+          projectImg:[]
         }}
       >
         <Form.Item
@@ -70,7 +90,10 @@ const CreateProjectModal:React.FC<CreateProjectModalProps> = (props) => {
           label='项目封面'
           name='projectImg'
         >
-          <ProjectImgUpload/>
+          <ProjectImgUpload
+            customRequestHandle={customRequestHandle}
+            removeHandle={removeHandle}
+          />
         </Form.Item>
         <Form.Item wrapperCol={{offset: 10}}>
           <Button type='primary' htmlType="submit">确认新建</Button>

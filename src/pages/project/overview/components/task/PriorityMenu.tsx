@@ -1,49 +1,27 @@
 import React, { useState } from 'react';
 import { Dropdown, Menu, message } from 'antd';
-import { BorderOutlined, CheckSquareOutlined } from '@ant-design/icons';
-import { TaskInfo } from '@/pages/project/overview/data';
-import { connect, Dispatch } from 'umi';
-import { ColumnsInfo, ProgressInfo } from '../../data';
-import { updateTask } from '../../service';
 import { bugPriorityEnum, bugPriorityBgColor } from '@/utils/enums';
-import styles from './index.less';
+import styles from '../columns/index.less';
 
 interface PriorityMenuProps {
-  row: TaskInfo;
-  dataSource: ColumnsInfo[];
-  dispatch: Dispatch;
-  projectId: number;
+  value?: any;
+  onChange?: (v: any) => void;
+  onSave?: (v: any) => void
 }
 
 const PriorityMenu: React.FC<PriorityMenuProps> = props => {
-
-  const clickHandler = async ({ key, domEvent }) => {
+  const clickHandler = ({ key, domEvent }) => {
     domEvent.stopPropagation();
     key = parseInt(key);
-    if (key !== props.row.priority) {
-      const res = await updateTask(props.projectId, props.row.id, props.row.status, key,props.row.follower,props.row.description);
-      if (res.status !== 1) {
-        return message.warning(res.error);
-      }
-      const newData = [...props.dataSource];
-      for (let i = 0; i < newData.length; i++) {
-        let targetRow = newData[i].taskList.find(
-          item => item.id === props.row.id,
-        );
-        if (targetRow) {
-          targetRow.priority = key;
-          break;
-        }
-      }
-      props.dispatch({
-        type: 'overview/setColumnsList',
-        payload: newData,
-      });
+    if (props.onSave){
+      props.onSave(key)
+    }else {
+      props.onChange(key);
     }
   };
 
   const menu = (
-    <Menu onClick={clickHandler} selectedKeys={[props.row.status.toString()]}>
+    <Menu onClick={clickHandler} selectedKeys={props.value?[props.value.toString()]:[]}>
       <Menu.Item key={1}>
         <div style={{ backgroundColor: bugPriorityBgColor[1] }}
              className={styles.priorityEnum}>{bugPriorityEnum[1]}</div>
@@ -78,19 +56,17 @@ const PriorityMenu: React.FC<PriorityMenuProps> = props => {
           borderRadius: 2,
           marginRight: 4,
           fontSize: 12,
-          backgroundColor: bugPriorityBgColor[props.row.priority],
+          backgroundColor: bugPriorityBgColor[props.value],
           color: 'white',
+          width: 32,
+          height: 16,
         }}
         onClick={e => e.stopPropagation()}
       >
-        {bugPriorityEnum[props.row.priority]}
+        {bugPriorityEnum[props.value]}
       </div>
     </Dropdown>
   );
 };
-const mapStateToProps = state => {
-  return {
-    dataSource: state.overview.columnsList,
-  };
-};
-export default connect(mapStateToProps)(PriorityMenu);
+
+export default PriorityMenu;

@@ -50,4 +50,7 @@ export default  {
   updateListUrl:'/project/overview/updateList',
   createListUrl:'/project/overview/createList',
   createTaskUrl:'/project/overview/createTask',
+  uploadTaskImgUrl: '/project/overview/uploadTaskImg',
+  delTaskImgUrl: '/project/overview/delTaskImg',
+  getTaskDetailUrl: '/project/overview/getTaskDetail',
 }
