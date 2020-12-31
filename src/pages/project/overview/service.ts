@@ -31,7 +31,7 @@ export const updateList = (projectId, listId, title) => {
 };
 
 export const updateTask = (projectId, taskId, value, key) => {
-  let data = { task_id: taskId, project_id: projectId, value,key };
+  let data = { task_id: taskId, project_id: projectId, value, key };
   return request(urls.updateTaskUrl, { method: 'post', data });
 };
 

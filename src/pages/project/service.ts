@@ -35,8 +35,14 @@ export const uploadProjectImgApi = (data, projectId = null) => {
   });
 };
 
-export const delProjectImgApi = (filename) => {
-  return request(urls.delProjectImgUrl, { method: 'post', data: { filename } });
+export const delProjectImgApi = (fileId, taskId = null) => {
+  const postData = {
+    file_id: fileId,
+  };
+  if (taskId) {
+    postData['task_id'] = taskId;
+  }
+  return request(urls.delProjectImgUrl, { method: 'post', data: postData });
 };
 
 export const getProjectById = (id) => {

@@ -80,7 +80,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = (props) => {
     };
 
     const customRequestHandle = async (file) => {
-      const res = await uploadTaskImgApi(file, props.projectId);
+      const res = await uploadTaskImgApi(file, props.projectId, props.currentTask.id);
       if (res.status === 1) {
         file.onSuccess(res);
       } else {
@@ -89,7 +89,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = (props) => {
     };
 
     const removeHandle = async (file) => {
-      const res = await delProjectImgApi(file.name);
+      const res = await delProjectImgApi(file.id, props.currentTask.id);
       if (res.status === 1) {
         message.success('删除图片成功');
         return true;

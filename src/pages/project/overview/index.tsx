@@ -13,7 +13,7 @@ import {
   Progress,
   Select,
 } from 'antd';
-import { ContactsOutlined, CarOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import { ContactsOutlined, CarOutlined, PlusOutlined, TeamOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import { ColumnsInfo, ProgressInfo } from './data';
 import CreateListModal from '@/pages/project/overview/components/createListModal';
@@ -35,6 +35,15 @@ const tabList = [
       <span style={{ fontSize: 14 }}>
         <ContactsOutlined />
         我创建的
+      </span>
+    ),
+  },
+  {
+    key: 'tab-3',
+    tab: (
+      <span style={{ fontSize: 14 }}>
+        <TeamOutlined />
+        我关注的
       </span>
     ),
   },

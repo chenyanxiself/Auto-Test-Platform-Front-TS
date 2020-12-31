@@ -32,7 +32,7 @@ export default (props) => {
     setSelectedKeys(data.selectedKeys)
     setOpenKeys(data.openKeys)
     setRootSubmenuKeyss(data.rootSubmenuKeys)
-  },[])
+  },[history.location.pathname])
 
   const onOpenChange = openKeys => {
     const latestOpenKey = openKeys.find(key => openKeys.indexOf(key) === -1);

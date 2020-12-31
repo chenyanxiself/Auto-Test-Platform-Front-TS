@@ -79,7 +79,7 @@ const Columns: React.FC<ColumnsProps> = props => {
   };
 
   const removeHandle = async (file) => {
-    const res = await delProjectImgApi(file.name);
+    const res = await delProjectImgApi(file.id);
     if (res.status === 1) {
       message.success('删除图片成功');
       return true;
