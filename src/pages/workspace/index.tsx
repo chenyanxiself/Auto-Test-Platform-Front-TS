@@ -123,7 +123,7 @@ const Workspace = (props) => {
                     <Card.Meta
                       title={item.name}
                       description={<div className={styles.remark}>{item.remark}</div>}
-                      avatar={<Avatar src={item.url}/>}
+                      avatar={<Avatar src={item.img.url}/>}
                     />
                   </Card.Grid>
                 )
@@ -147,7 +147,7 @@ const Workspace = (props) => {
                     <Card.Meta
                       title={item.name}
                       description={<div className={styles.remark}>{item.remark}</div>}
-                      avatar={<Avatar src={item.url}/>}
+                      avatar={<Avatar src={item.img.url}/>}
                     />
                   </Card.Grid>
                 )

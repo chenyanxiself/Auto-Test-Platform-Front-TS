@@ -10,7 +10,7 @@ interface HostProps {
   envSections: any[]
 }
 
-const Host: React.FC<Partial<HostProps>> = ({ value = {}, onChange ,envSections}) => {
+const Host: React.FC<Partial<HostProps>> = ({ value = {isUseEnv:false}, onChange ,envSections}) => {
   const triggerChange = changedValue => {
     if (onChange) {
       onChange({
