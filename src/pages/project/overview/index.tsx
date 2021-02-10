@@ -138,7 +138,6 @@ const Overview: React.FC<OverviewProps> = props => {
   }, [props.trigger]);
 
 
-
   const tabChangeHandler = key => {
     setTaskRelationType(parseInt(key.split('-')[1]));
   };
@@ -160,7 +159,7 @@ const Overview: React.FC<OverviewProps> = props => {
     <Card
       tabList={tabList}
       onTabChange={key => tabChangeHandler(key)}
-      activeTabKey={taskRelationType.toString()}
+      activeTabKey={`tab-${taskRelationType.toString()}` }
       bordered={false}
       loading={isLoading}
       bodyStyle={{ padding: 0 }}
@@ -174,7 +173,7 @@ const Overview: React.FC<OverviewProps> = props => {
         finishHandler={createListHandler}
       />
       <TaskDrawer
-        projectId = {projectId}
+        projectId={projectId}
       />
     </Card>
   );

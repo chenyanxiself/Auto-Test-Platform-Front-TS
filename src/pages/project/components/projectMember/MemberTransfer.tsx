@@ -70,6 +70,8 @@ const MemberTransfer: React.FC<MemberTransferProps> = (props) => {
       titles={['用户列表', '已选用户']}
       operations={['添加', '删除']}
       rowKey={item => item.id}
+      oneWay={true}
+      locale={{ itemUnit: '项', itemsUnit: '项', searchPlaceholder: '请输入搜索内容' }}
     />
   );
 };
