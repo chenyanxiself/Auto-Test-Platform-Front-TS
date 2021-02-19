@@ -12,24 +12,24 @@ import {
   DownloadOutlined,
   UploadOutlined,
   CopyOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
-import { getCaseByModuleId,deleteProjectCase } from './service';
+import { getCaseByModuleId, deleteProjectCase } from './service';
 import CreateCaseModal from '@/pages/project/case/components/createCaseModal';
 import { priorityEnum } from '@/utils/enums';
-import { connect } from 'umi';
+import { connect, history } from 'umi';
 
-const Case = (props) => {
+const Case = props => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentCase, setCurrentCase] = useState({});
   const projectId = parseInt(props.match.params.id);
-  const inputRef = useRef()
+  const inputRef = useRef();
   useEffect(() => {
     // @ts-ignore
     getData();
   }, [props.selectedModule]);
-
 
   const columns = [
     {
@@ -47,7 +47,7 @@ const Case = (props) => {
       title: '优先级',
       width: '20%',
       dataIndex: 'priority',
-      render: (text) => {
+      render: text => {
         return priorityEnum[text];
       },
     },
@@ -66,13 +66,23 @@ const Case = (props) => {
     {
       title: '操作',
       width: '23%',
-      render: (record) =>
+      render: record => (
         <span>
           <Button
-            type='primary'
+            type="primary"
+            shape="circle"
+            icon={<EyeOutlined />}
+            size="small"
+            onClick={() => {
+              history.push(`${history.location.pathname}/${record.id}/detail`);
+            }}
+            style={{ marginRight: 10 }}
+          />
+          <Button
+            type="primary"
             shape="circle"
             icon={<FormOutlined />}
-            size='small'
+            size="small"
             onClick={() => {
               setModalVisible(true);
               setCurrentCase(record);
@@ -80,35 +90,36 @@ const Case = (props) => {
             style={{ marginRight: 10 }}
           />
           <Button
-            type='primary'
+            type="primary"
             shape="circle"
             icon={<CopyOutlined />}
-            size='small'
+            size="small"
             style={{ marginRight: 10 }}
             onClick={() => onCopy(record)}
           />
           <Button
-            type='primary'
+            type="primary"
             shape="circle"
             icon={<CloseOutlined />}
             danger
-            size='small'
+            size="small"
             onClick={() => {
               onDelete(record);
             }}
           />
-      </span>,
+        </span>
+      ),
     },
   ];
-  const onCopy = (record) => {
+  const onCopy = record => {
     let newRecord = { ...record };
     newRecord.name = '';
-    newRecord.id = undefined
+    newRecord.id = undefined;
     setModalVisible(true);
     setCurrentCase(newRecord);
   };
 
-  const onDelete = async (record) => {
+  const onDelete = async record => {
     Modal.confirm({
       title: '是否确认删除?',
       icon: <ExclamationCircleOutlined />,
@@ -136,7 +147,11 @@ const Case = (props) => {
   const getData = async () => {
     setIsLoading(true);
     // @ts-ignore
-    const res = await getCaseByModuleId(projectId, props.selectedModule.id, inputRef.current.state.value);
+    const res = await getCaseByModuleId(
+      projectId,
+      props.selectedModule.id,
+      inputRef.current.state.value,
+    );
     if (res.status === 1) {
       let dataSource = res.data.map(item => {
         item.moduleName = item['module_name'];
@@ -149,7 +164,6 @@ const Case = (props) => {
     }
     setIsLoading(false);
   };
-
 
   const title = (
     <div style={{ fontWeight: 'normal', fontSize: 14 }}>
@@ -165,7 +179,9 @@ const Case = (props) => {
           }}
           size={'large'}
           style={{ padding: 0 }}
-        >全部用例</Button>
+        >
+          全部用例
+        </Button>
       </div>
       <div style={{ height: 40, lineHeight: '40px' }}>
         <div style={{ float: 'left' }}>
@@ -177,17 +193,23 @@ const Case = (props) => {
               setCurrentCase({});
             }}
             icon={<PlusCircleOutlined />}
-          >新建用例</Button>
+          >
+            新建用例
+          </Button>
           <Button
             style={{ marginRight: 10 }}
             size={'small'}
             icon={<DownloadOutlined />}
-          >导入用例</Button>
+          >
+            导入用例
+          </Button>
           <Button
             style={{ marginRight: 10 }}
             size={'small'}
             icon={<UploadOutlined />}
-          >导出用例</Button>
+          >
+            导出用例
+          </Button>
         </div>
         <div style={{ float: 'right' }}>
           <Input.Search
@@ -207,15 +229,10 @@ const Case = (props) => {
   return (
     <div className={styles.main}>
       <div className={styles.left}>
-        <ModuleTree
-          projectId={projectId}
-        />
+        <ModuleTree projectId={projectId} />
       </div>
       <div className={styles.right}>
-        <Card
-          bordered={false}
-          title={title}
-        >
+        <Card bordered={false} title={title}>
           <Table
             dataSource={dataSource}
             columns={columns}
@@ -236,7 +253,7 @@ const Case = (props) => {
       </div>
       <CreateCaseModal
         visible={isModalVisible}
-        cancelHandler={()=>setModalVisible(false)}
+        cancelHandler={() => setModalVisible(false)}
         currentCase={currentCase}
         afterHandler={afterHandler}
         projectId={projectId}
@@ -245,8 +262,7 @@ const Case = (props) => {
   );
 };
 
-
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     selectedModule: state.case.selectedModule,
   };

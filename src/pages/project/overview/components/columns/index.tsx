@@ -21,6 +21,7 @@ import PriorityMenu from '@/pages/project/overview/components/task/PriorityMenu'
 import ProjectImgUpload from '@/pages/project/components/projectImgUpload';
 import { uploadTaskImgApi } from '@/pages/project/overview/service';
 import { delProjectImgApi } from '@/pages/project/service';
+import FullEditor from '@/pages/project/components/fullEditor';
 
 interface ColumnsProps {
   columns: ColumnsInfo;
@@ -69,7 +70,7 @@ const Columns: React.FC<ColumnsProps> = props => {
     });
   };
 
-  const customRequestHandle = async (file) => {
+  const customRequestHandle = async file => {
     const res = await uploadTaskImgApi(file, props.projectId);
     if (res.status === 1) {
       file.onSuccess(res);
@@ -78,7 +79,7 @@ const Columns: React.FC<ColumnsProps> = props => {
     }
   };
 
-  const removeHandle = async (file) => {
+  const removeHandle = async file => {
     const res = await delProjectImgApi(file.id);
     if (res.status === 1) {
       message.success('删除图片成功');
@@ -100,10 +101,13 @@ const Columns: React.FC<ColumnsProps> = props => {
       width: 800,
       content: (
         <div className={styles.modalBody}>
-          <Form form={form} initialValues={{
-            taskPriority: 3,
-            attachment:[]
-          }}>
+          <Form
+            form={form}
+            initialValues={{
+              taskPriority: 3,
+              attachment: [],
+            }}
+          >
             <Row>
               <Col span={24}>
                 <Form.Item
@@ -117,18 +121,12 @@ const Columns: React.FC<ColumnsProps> = props => {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item
-                  name={'taskPriority'}
-                  label={'优先级'}
-                >
+                <Form.Item name={'taskPriority'} label={'优先级'}>
                   <PriorityMenu />
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item
-                  name={'taskFollower'}
-                  label={'关注人'}
-                >
+                <Form.Item name={'taskFollower'} label={'关注人'}>
                   <ProjectMember />
                 </Form.Item>
               </Col>
@@ -137,13 +135,7 @@ const Columns: React.FC<ColumnsProps> = props => {
               </Col>
               <Col span={24}>
                 <Form.Item name={'description'}>
-                  <Input.TextArea
-                    placeholder={'请输入任务描述'}
-                    autoComplete={'off'}
-                    autoSize={{ minRows: 4, maxRows: 6 }}
-                    allowClear={true}
-                    maxLength={200}
-                  />
+                  <FullEditor noBottom={true} />
                 </Form.Item>
               </Col>
               <Col span={24}>
@@ -164,8 +156,12 @@ const Columns: React.FC<ColumnsProps> = props => {
       ),
       onOk: async () => {
         const value = await form.validateFields();
-        const attachment = value.attachment ? value.attachment.map(item => item.id) : [];
-        const follower = value.taskFollower ? value.taskFollower.map(item => item.id) : [];
+        const attachment = value.attachment
+          ? value.attachment.map(item => item.id)
+          : [];
+        const follower = value.taskFollower
+          ? value.taskFollower.map(item => item.id)
+          : [];
         const priority = value.taskPriority ? value.taskPriority : 3;
         const res = await createTask(
           props.projectId,
@@ -206,7 +202,11 @@ const Columns: React.FC<ColumnsProps> = props => {
           }}
         >
           <div className={styles.header}>
-            <ClickSpan value={titleValue} onSave={saveTitle} style={{ width: 150 }} />
+            <ClickSpan
+              value={titleValue}
+              onSave={saveTitle}
+              style={{ width: 150 }}
+            />
             <CloseCircleOutlined
               style={{ color: 'red' }}
               onClick={deleteHandler}

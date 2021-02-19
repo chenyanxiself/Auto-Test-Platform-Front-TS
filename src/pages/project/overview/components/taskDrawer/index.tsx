@@ -249,7 +249,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
       onClose={closeDrawerHandler}
       forceRender={true}
       title={'任务详情'}
-      width={'50%'}
+      width={'60%'}
     >
       <Spin
         indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
@@ -308,15 +308,10 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
               </Col>
               <Col span={24}>
                 <Form.Item name={'description'}>
-                  {/*<Input.TextArea*/}
-                  {/*  placeholder={'请输入任务描述'}*/}
-                  {/*  autoComplete={'off'}*/}
-                  {/*  autoSize={{ minRows: 4, maxRows: 6 }}*/}
-                  {/*  allowClear={true}*/}
-                  {/*  maxLength={200}*/}
-                  {/*  onBlur={saveDescriptionHandle}*/}
-                  {/*/>*/}
-                  <FullEditor onSave={saveDescriptionHandle} />
+                  <FullEditor
+                    onSave={saveDescriptionHandle}
+                    style={{ height: 300 }}
+                  />
                 </Form.Item>
               </Col>
               <Col span={24}>

@@ -1,13 +1,16 @@
 import 'braft-editor/dist/index.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import BraftEditor from 'braft-editor';
 import { Button, Modal } from 'antd';
 import styles from './index.less';
 import { ZoomInOutlined } from '@ant-design/icons';
 
 interface FullEditorProps {
-  onSave: any;
+  onSave?: any;
   value?: any;
+  noBottom?: boolean;
+  onChange?: any;
+  style?: React.CSSProperties;
 
   [name: string]: any;
 }
@@ -18,9 +21,11 @@ const FullEditor: React.FC<FullEditorProps> = props => {
   );
   const [visible, setVisble] = useState(false);
   const [imgUrl, setImgUrl] = useState(null);
+
   const controls = props.controls
     ? props.controls
     : ['bold', 'italic', 'underline', 'text-color', 'media'];
+
   const imageControls = props.imageControls
     ? props.imageControls
     : [
@@ -30,7 +35,6 @@ const FullEditor: React.FC<FullEditorProps> = props => {
         'align-center', // 设置图片居中
         'align-right', // 设置图片居右
         {
-          // text: <ZoomInOutlined />,
           render: mediaData => {
             const clickHandler = () => {
               setImgUrl(mediaData.url);
@@ -49,13 +53,23 @@ const FullEditor: React.FC<FullEditorProps> = props => {
       ];
 
   useEffect(() => {
-    setEditorValue(BraftEditor.createEditorState(props.value));
+    if (props.value != editorValue.toHTML()) {
+      setEditorValue(BraftEditor.createEditorState(props.value));
+    }
   }, [props.value]);
 
-  const saveDescriptionHandle = async () => {
+  const saveDescriptionHandler = async () => {
     const v = editorValue.toHTML();
     if (v !== props.value) {
       props.onSave(v);
+    }
+  };
+
+  const onChangeHandler = editorState => {
+    if (props.noBottom) {
+      props.onChange(editorState.toRAW());
+    } else {
+      setEditorValue(editorState);
     }
   };
 
@@ -63,32 +77,40 @@ const FullEditor: React.FC<FullEditorProps> = props => {
     <div className={styles.body}>
       <div>
         <BraftEditor
-          value={editorValue}
-          onChange={editorState => setEditorValue(editorState)}
+          value={props.noBottom ? props.value : editorValue}
+          onChange={onChangeHandler}
           controls={controls}
           placeholder="请输入任务描述"
-          contentClassName={styles.innerContent}
           className={styles.content}
           imageControls={imageControls}
+          contentStyle={{ height: 200, ...props.style }}
+          media={{
+            accepts: {
+              image:
+                'image/png,image/jpeg,image/gif,image/webp,image/apng,image/svg',
+            },
+          }}
         />
       </div>
-      <div className={styles.bottom}>
-        <Button
-          onClick={() =>
-            setEditorValue(BraftEditor.createEditorState(props.value))
-          }
-          className={styles.button}
-        >
-          还原
-        </Button>
-        <Button
-          onClick={saveDescriptionHandle}
-          type={'primary'}
-          className={styles.button}
-        >
-          确认
-        </Button>
-      </div>
+      {props.noBottom ? null : (
+        <div className={styles.bottom}>
+          <Button
+            onClick={() =>
+              setEditorValue(BraftEditor.createEditorState(props.value))
+            }
+            className={styles.button}
+          >
+            还原
+          </Button>
+          <Button
+            onClick={saveDescriptionHandler}
+            type={'primary'}
+            className={styles.button}
+          >
+            确认
+          </Button>
+        </div>
+      )}
       <Modal
         visible={visible}
         onCancel={() => setVisble(false)}
