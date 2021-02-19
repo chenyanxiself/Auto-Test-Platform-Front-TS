@@ -81,6 +81,7 @@ const StatusMenu: React.FC<StatusMenuProps> = props => {
           cursor: 'pointer',
           paddingLeft: 5,
           paddingRight: 5,
+          fontSize: 12,
         }}
         onMouseOver={() => setStatusHover(true)}
         onMouseLeave={() => setStatusHover(false)}

@@ -2,6 +2,7 @@ import { Droppable } from 'react-beautiful-dnd';
 import { TaskInfo } from '@/pages/project/overview/data';
 import React from 'react';
 import Task from '@/pages/project/overview/components/task';
+import styles from './index.less';
 
 interface ListProps {
   taskList: TaskInfo[];
@@ -21,11 +22,8 @@ const List: React.FC<ListProps> = props => {
               ? 'rgba(5,122,255,.1)'
               : null,
             border: snapshot.isDraggingOver ? '2px dashed #057AFF' : null,
-            borderRadius: 5,
-            overflowY: 'auto',
-            overflowAnchor:'none',
-            height: 400,
           }}
+          className={styles.list}
         >
           {props.taskList.map((item, index) => {
             return (

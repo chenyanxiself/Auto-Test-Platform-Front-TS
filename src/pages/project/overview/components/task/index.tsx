@@ -84,7 +84,7 @@ const Task: React.FC<TaskProps> = props => {
             <StatusMenu row={props.task} projectId={props.projectId} />
             <div onClick={e => e.stopPropagation()}>
               <Tooltip title={props.task.creator.cname}>
-                <Avatar className={styles.avatar}>
+                <Avatar className={styles.avatar} size={24} gap={1}>
                   {props.task.creator.cname.substring(
                     props.task.creator.cname.length - 2,
                     props.task.creator.cname.length,
