@@ -24,7 +24,7 @@ const List: React.FC<ListProps> = props => {
             borderRadius: 5,
             overflowY: 'auto',
             overflowAnchor: 'none',
-            maxHeight: 1000,
+            maxHeight: 600,
             minHeight: 300,
           }}
         >

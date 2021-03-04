@@ -30,6 +30,7 @@
     "@umijs/test": "^3.2.24",
     "antd": "^4.8.0",
     "braft-editor": "^2.3.9",
+    "cross-env": "7.0.3",
     "echarts": "^4.9.0",
     "echarts-for-react": "^2.0.16",
     "immutability-helper": "^3.1.1",

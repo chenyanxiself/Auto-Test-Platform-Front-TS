@@ -5,7 +5,7 @@ import styles from './index.less';
 import { userLogin } from './service';
 import storeageUtil, { localStorageKey } from '@/utils/storageUtil';
 
-export default (props) => {
+export default props => {
   const validatorUserName = (rule, value) => {
     if (/^ *$/.test(value)) {
       return Promise.reject('用户名不能为空!');
@@ -17,8 +17,8 @@ export default (props) => {
       return Promise.reject('用户名为4到12位,英文、数字、下划线!');
     }
   };
-  const handleSubmit = (values) => {
 
+  const handleSubmit = values => {
     userLogin(values)
       .then(res => {
         if (res.status === 1) {
@@ -38,20 +38,10 @@ export default (props) => {
     <div className={styles.main}>
       <div className={styles.content}>
         <h2>用户登录</h2>
-        <Form
-          name="loginForm"
-          className={styles.form}
-          onFinish={handleSubmit}
-        >
-          <Form.Item
-            name="username"
-            rules={[
-              { validator: validatorUserName },
-            ]}
-          >
+        <Form name="loginForm" className={styles.form} onFinish={handleSubmit}>
+          <Form.Item name="username" rules={[{ validator: validatorUserName }]}>
             <Input
-              prefix={<UserOutlined
-                className="site-form-item-icon" />}
+              prefix={<UserOutlined className="site-form-item-icon" />}
               placeholder="用户名"
               autoComplete="off"
             />
@@ -67,7 +57,11 @@ export default (props) => {
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" className={styles.formButton}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className={styles.formButton}
+            >
               登陆
             </Button>
           </Form.Item>
@@ -75,5 +69,4 @@ export default (props) => {
       </div>
     </div>
   );
-}
-
+};
