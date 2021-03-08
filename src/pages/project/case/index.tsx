@@ -146,10 +146,10 @@ const Case = props => {
 
   const getData = async () => {
     setIsLoading(true);
-    // @ts-ignore
     const res = await getCaseByModuleId(
       projectId,
       props.selectedModule.id,
+      // @ts-ignore
       inputRef.current.state.value,
     );
     if (res.status === 1) {

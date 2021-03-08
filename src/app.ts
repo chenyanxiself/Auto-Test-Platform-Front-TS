@@ -3,7 +3,7 @@ import storeageUtil, { localStorageKey } from '@/utils/storageUtil';
 import { message } from 'antd';
 
 export const request: RequestConfig = {
-  prefix: `http://10.212.42.107:8900/api/v1`,
+  prefix: `http://localhost:8900/api/v1`,
   timeout: 15000,
   errorConfig: {},
   middlewares: [],

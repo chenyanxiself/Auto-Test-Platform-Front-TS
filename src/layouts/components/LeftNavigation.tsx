@@ -7,10 +7,10 @@ export default () => {
   return (
     <div className={styles.leftNav}>
       <header className={styles.leftNavHeader}>
-        <img src={logo} alt="logo"/>
-        <h1>Auto Test</h1>
+        <img src={logo} alt="logo" />
+        <h1>Event</h1>
       </header>
       <Menus />
     </div>
   );
-}
+};
