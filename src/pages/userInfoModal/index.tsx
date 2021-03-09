@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, Select } from 'antd';
+import { Modal, Form, Input, Select, message } from 'antd';
+import { getAllRoleList } from './service';
 
 interface UserInfoModalProps {
   visible: boolean;
@@ -12,7 +13,24 @@ interface UserInfoModalProps {
 const UserInfoModal: React.FC<UserInfoModalProps> = props => {
   const [roleList, setRoleList] = useState<Partial<RoleInfo>[]>([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const getRoles = async () => {
+      const res = await getAllRoleList();
+      if (res.status == 1) {
+        setRoleList(
+          res.data.map(item => {
+            return {
+              id: item.id,
+              name: item.role_name,
+            };
+          }),
+        );
+      } else {
+        message.warning(res.error);
+      }
+    };
+    getRoles();
+  }, []);
 
   useEffect(() => {
     if (props.visible && props.optionType == 'update') {
@@ -39,20 +57,27 @@ const UserInfoModal: React.FC<UserInfoModalProps> = props => {
       visible={props.visible}
       onCancel={props.cancelHandler}
       onOk={form.submit}
+      title={props.optionType == 'update' ? '更新用户' : '新增用户'}
     >
       <Form form={form} onFinish={props.submitHandler}>
         <Form.Item
           name={'userName'}
           rules={[{ required: true, message: '请输入用户名!' }]}
         >
-          <Input autoComplete={'off'} placeholder={'请输入用户名'} />
+          <Input
+            autoComplete={'off'}
+            placeholder={'请输入用户名'}
+            disabled={props.optionType == 'update'}
+          />
         </Form.Item>
-        <Form.Item
-          name={'password'}
-          rules={[{ required: true, message: '请输入密码!' }]}
-        >
-          <Input.Password autoComplete={'off'} placeholder={'请输入密码'} />
-        </Form.Item>
+        {props.optionType == 'update' ? null : (
+          <Form.Item
+            name={'password'}
+            rules={[{ required: true, message: '请输入密码!' }]}
+          >
+            <Input.Password autoComplete={'off'} placeholder={'请输入密码'} />
+          </Form.Item>
+        )}
         <Form.Item name={'email'}>
           <Input autoComplete={'off'} placeholder={'请输入email'} />
         </Form.Item>

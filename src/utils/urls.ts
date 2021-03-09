@@ -21,7 +21,9 @@ export default {
   getApiCaseByConditionUrl: '/project/getApiCaseByCondition/',
   deleteApiCaseByIdUrl: '/project/deleteApiCaseById/',
   updatePasswordUrl: '/user/updatePassword',
+  createUserUrl: '/user/createUser',
   updateUserInfoUrl: '/user/updateUserInfo',
+  getAllRoleListUrl: '/user/getAllRoleList',
   getSuiteByProjectIdUrl: '/project/getSuiteByProjectId',
   getSuiteInfoByIdUrl: '/project/getSuiteInfoById',
   createSuiteUrl: '/project/createSuite',
@@ -54,6 +56,4 @@ export default {
   uploadTaskImgUrl: '/project/overview/uploadTaskImg',
   delTaskImgUrl: '/project/overview/delTaskImg',
   getTaskDetailUrl: '/project/overview/getTaskDetail',
-  createUserUrl: '/user/createUser',
-  updateUserUrl: '/user/updateUserInfo',
 };

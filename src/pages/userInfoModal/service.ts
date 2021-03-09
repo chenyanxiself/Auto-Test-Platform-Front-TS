@@ -21,12 +21,15 @@ export async function createUser(value: UserInfo) {
 
 export async function updateUser(value: UserInfo) {
   const data = {
-    user_name: value.name,
-    password: value.password,
+    user_id: value.id,
     user_cname: value.cname,
     email: value.email,
     phone: value.phone,
     role_ids: value.roleList,
   };
-  return request(urls.createUserUrl, { method: 'post', data });
+  return request(urls.updateUserInfoUrl, { method: 'post', data });
+}
+
+export async function getAllRoleList() {
+  return request(urls.getAllRoleListUrl, { method: 'get' });
 }
