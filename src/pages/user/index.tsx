@@ -6,19 +6,19 @@ import { updateUserInfo, updatePassword } from './service';
 import { GlobalModelState } from '@/models/global';
 import { Dispatch } from '@@/plugin-dva/connect';
 
-
 interface UserProps {
-  user: GlobalModelState
+  user: GlobalModelState;
   dispatch: Dispatch;
 
-  [name: string]: any
+  [name: string]: any;
 }
 
-const User: React.FC<UserProps> = (props) => {
+const User: React.FC<UserProps> = props => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
-  const onFinish = async (value) => {
+  const onFinish = async value => {
+    value = { ...value, id: props.user.id };
     const res = await updateUserInfo(value);
     if (res.status === 1) {
       message.success('修改成功');
@@ -36,7 +36,7 @@ const User: React.FC<UserProps> = (props) => {
     }
   };
 
-  const changePwdOnFinish = async (value) => {
+  const changePwdOnFinish = async value => {
     const res = await updatePassword(value.oldPassword, value.newPassword);
     if (res.status === 1) {
       message.success('修改成功');
@@ -85,42 +85,43 @@ const User: React.FC<UserProps> = (props) => {
           <Form.Item
             label={<span className={styles.label}>用户名</span>}
             name={'name'}
-            rules={[{
-              required: true,
-              message: '必填',
-            }]}
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+            ]}
           >
-            <Input disabled={true} autoComplete='off' />
+            <Input disabled={true} autoComplete="off" />
           </Form.Item>
           <Form.Item
             label={<span className={styles.label}>用户昵称</span>}
             name={'cname'}
-            rules={[{
-              required: true,
-              message: '必填',
-            }]}
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+            ]}
           >
-            <Input autoComplete='off' />
+            <Input autoComplete="off" />
           </Form.Item>
           <Form.Item
             label={<span className={styles.label}>邮箱</span>}
             name={'email'}
           >
-            <Input autoComplete='off' />
+            <Input autoComplete="off" />
           </Form.Item>
           <Form.Item
             label={<span className={styles.label}>手机</span>}
             name={'phone'}
           >
-            <Input autoComplete='off' />
+            <Input autoComplete="off" />
           </Form.Item>
-          <Form.Item
-            wrapperCol={{ offset: 4 }}
-          >
-            <Button
-              onClick={() => setVisible(true)}
-              type="dashed"
-            >修改密码</Button>
+          <Form.Item wrapperCol={{ offset: 4 }}>
+            <Button onClick={() => setVisible(true)} type="dashed">
+              修改密码
+            </Button>
           </Form.Item>
           <Form.Item wrapperCol={{ span: 7, offset: 4 }}>
             <Button type="primary" htmlType="submit">
@@ -132,8 +133,8 @@ const User: React.FC<UserProps> = (props) => {
       <Modal
         visible={visible}
         onCancel={() => {
-          passwordForm.resetFields()
-          setVisible(false)
+          passwordForm.resetFields();
+          setVisible(false);
         }}
         footer={null}
       >
@@ -146,23 +147,28 @@ const User: React.FC<UserProps> = (props) => {
           <Form.Item
             label={'原密码'}
             name={'oldPassword'}
-            rules={[{
-              required: true,
-              message: '必填',
-            }]}
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+            ]}
           >
             <Input.Password placeholder={'请输入原密码'} />
           </Form.Item>
           <Form.Item
             label={'新密码'}
             name={'newPassword'}
-            rules={[{
-              required: true,
-              message: '必填',
-            }, {
-              min: 5,
-              message: '至少5个字符',
-            }]}
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+              {
+                min: 5,
+                message: '至少5个字符',
+              },
+            ]}
           >
             <Input.Password placeholder={'请输入新密码'} />
           </Form.Item>
@@ -170,16 +176,18 @@ const User: React.FC<UserProps> = (props) => {
             label={'确认密码'}
             name={'ackPassword'}
             required={true}
-            rules={[{
-              validator: (_, value) => {
-                const newPassword = passwordForm.getFieldValue('newPassword');
-                if (value !== newPassword) {
-                  return Promise.reject('两次输入的密码不一致');
-                } else {
-                  return Promise.resolve();
-                }
+            rules={[
+              {
+                validator: (_, value) => {
+                  const newPassword = passwordForm.getFieldValue('newPassword');
+                  if (value !== newPassword) {
+                    return Promise.reject('两次输入的密码不一致');
+                  } else {
+                    return Promise.resolve();
+                  }
+                },
               },
-            }]}
+            ]}
           >
             <Input.Password placeholder={'确认密码'} />
           </Form.Item>
