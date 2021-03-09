@@ -54,4 +54,6 @@ export default {
   uploadTaskImgUrl: '/project/overview/uploadTaskImg',
   delTaskImgUrl: '/project/overview/delTaskImg',
   getTaskDetailUrl: '/project/overview/getTaskDetail',
+  createUserUrl: '/user/createUser',
+  updateUserUrl: '/user/updateUserInfo',
 };
