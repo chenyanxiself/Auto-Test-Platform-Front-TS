@@ -1,17 +1,45 @@
-.main{
+.main {
   width: 100%;
-  .menus{
+
+  .menus {
     width: 80%;
     float: left;
   }
-  .user{
+
+  .user {
     float: right;
-    .avatar{
-      background-color: #fde3cf;
-      color: #f56a00;
-      cursor          : pointer;
-      :hover {
-        opacity: 0.4;
+
+    .account {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      > span {
+        vertical-align: middle;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.025);
+      }
+
+      &:global(.opened) {
+        background: rgba(0, 0, 0, 0.025);
+      }
+
+      .avatar {
+        background-color: #fde3cf;
+        color: #f56a00;
+        cursor: pointer;
+
+        :hover {
+          opacity: 0.4;
+        }
+      }
+      .name {
+        margin-left: 8px;
+        margin-right: 8px;
       }
     }
   }
