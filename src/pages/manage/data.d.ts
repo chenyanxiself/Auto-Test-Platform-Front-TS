@@ -11,6 +11,7 @@ interface MenuInfo {
   menuReg: string;
   parentId: number;
   icon: string;
+  [name: string]: any;
 }
 
 interface UserInfo {

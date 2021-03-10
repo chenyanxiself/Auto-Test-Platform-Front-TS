@@ -109,7 +109,9 @@ const UserManage: React.FC<UserManageProps> = props => {
     });
   };
 
-  const submitHandler = async value => {};
+  const submitHandler = async value => {
+    console.log(value);
+  };
 
   return (
     <div>
