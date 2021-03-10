@@ -13,6 +13,11 @@ export default [
         component: '@/pages/manage/userManage',
         exact: true,
       },
+      {
+        path: '/manage/role',
+        component: '@/pages/manage/roleManage',
+        exact: true,
+      },
       { path: '/user/info', component: '@/pages/user', exact: true },
       {
         path: '/project/:id/overview',
