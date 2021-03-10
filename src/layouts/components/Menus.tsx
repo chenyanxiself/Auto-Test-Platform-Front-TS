@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, message } from 'antd';
-import MenusList from './MenusList';
 import { history } from 'umi';
 import { getMenuAuth } from '@/layouts/service';
+import { navigationIcon } from '@/utils/enums';
 
 const { SubMenu } = Menu;
 export default props => {
@@ -14,9 +14,23 @@ export default props => {
   useEffect(() => {
     const getMenu = async () => {
       const res = await getMenuAuth();
-      console.log(res);
       if (res.status == 1) {
-        setMenuList(res.data);
+        const formatRegData = res.data.map(item => {
+          item.regExp = new RegExp(item.regExp);
+          item.icon = navigationIcon[item.icon];
+          return item;
+        });
+        let rootMenus = formatRegData.filter(item => item.parentId == null);
+        const childMenus = formatRegData.filter(item => item.parentId != null);
+        childMenus.forEach(citem => {
+          let target_menu = rootMenus.find(item => item.id == citem.parentId);
+          if (target_menu.childMenu instanceof Array) {
+            target_menu.childMenu.push(citem);
+          } else {
+            target_menu.childMenu = [citem];
+          }
+        });
+        setMenuList(rootMenus);
       } else {
         message.warning(res.error);
       }
@@ -26,13 +40,13 @@ export default props => {
 
   useEffect(() => {
     const pathname = history.location.pathname;
-    const data = MenusList.reduce(
+    const data = menusList.reduce(
       (pre, cur) => {
-        if (cur.childMenu.length > 0) {
+        if (cur.childMenu != undefined && cur.childMenu.length > 0) {
           pre.rootSubmenuKeys.push(cur.path);
-          const isSelected = cur.childMenu.find(item =>
-            item.regExp.test(pathname),
-          );
+          const isSelected = cur.childMenu.find(item => {
+            return item.regExp.test(pathname);
+          });
           if (isSelected) {
             pre.openKeys.push(cur.path);
             pre.selectedKeys.push(isSelected.path);
@@ -53,7 +67,7 @@ export default props => {
     setSelectedKeys(data.selectedKeys);
     setOpenKeys(data.openKeys);
     setRootSubmenuKeyss(data.rootSubmenuKeys);
-  }, [history.location.pathname]);
+  }, [history.location.pathname, menusList]);
 
   const onOpenChange = openKeys => {
     const latestOpenKey = openKeys.find(key => openKeys.indexOf(key) === -1);
@@ -72,7 +86,6 @@ export default props => {
     }
   };
 
-  const accessMenus = [1, 2, 3];
   return (
     <Menu
       mode="inline"
@@ -82,17 +95,11 @@ export default props => {
       onClick={onMenuClick}
       selectedKeys={selectedKeys}
     >
-      {MenusList.map(item => {
-        if (!accessMenus.includes(item.id)) {
-          return null;
-        }
-        if (item.childMenu.length > 0) {
+      {menusList.map(item => {
+        if (item.childMenu != undefined && item.childMenu.length > 0) {
           return (
             <SubMenu key={item.path} icon={item.icon} title={item.name}>
               {item.childMenu.map(childItem => {
-                if (!accessMenus.includes(childItem.id)) {
-                  return null;
-                }
                 return (
                   <Menu.Item key={childItem.path}>{childItem.name}</Menu.Item>
                 );

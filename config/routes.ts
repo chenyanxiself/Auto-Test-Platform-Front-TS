@@ -8,6 +8,11 @@ export default [
       { path: '/', redirect: '/workspace', exact: true },
       { path: '/project', component: '@/pages/project', exact: true },
       { path: '/workspace', component: '@/pages/workspace', exact: true },
+      {
+        path: '/manage/user',
+        component: '@/pages/manage/userManage',
+        exact: true,
+      },
       { path: '/user/info', component: '@/pages/user', exact: true },
       {
         path: '/project/:id/overview',
