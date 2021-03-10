@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Select, message, Tree } from 'antd';
+import MenuTree from '@/pages/manage/roleManage/components/roleInfoModal/MenuTree';
 
 interface RoleInfoModalProps {
   visible: boolean;
@@ -11,28 +12,6 @@ interface RoleInfoModalProps {
 }
 
 const RoleInfoModal: React.FC<RoleInfoModalProps> = props => {
-  const [treeData, setTreeData] = useState([]);
-  useEffect(() => {
-    let menuListCp: Partial<MenuInfo>[] = props.menuList.map(item => {
-      return {
-        ...item,
-        key: item.id,
-        title: item.name,
-      };
-    });
-    let rootMenus = menuListCp.filter(item => item.parentId == null);
-    const childMenus = menuListCp.filter(item => item.parentId != null);
-    childMenus.forEach(citem => {
-      let target_menu = rootMenus.find(item => item.id == citem.parentId);
-      if (target_menu.children instanceof Array) {
-        target_menu.children.push(citem);
-      } else {
-        target_menu.children = [citem];
-      }
-    });
-    setTreeData(rootMenus);
-  }, [props.menuList]);
-
   useEffect(() => {
     if (props.visible) {
       switch (props.optionType) {
@@ -69,7 +48,7 @@ const RoleInfoModal: React.FC<RoleInfoModalProps> = props => {
           <Input autoComplete={'off'} placeholder={'请输入角色名'} />
         </Form.Item>
         <Form.Item name={'menuList'} label={'权限'}>
-          <Tree checkable treeData={treeData} />
+          <MenuTree menuList={props.menuList} />
         </Form.Item>
       </Form>
     </Modal>

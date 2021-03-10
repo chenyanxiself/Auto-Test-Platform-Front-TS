@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Table, Tag, Divider, Modal, message, Space } from 'antd';
 import styles from './index.less';
-import { getAllRoleList, getAllMenu } from '@/pages/manage/roleManage/service';
+import {
+  getAllRoleList,
+  getAllMenu,
+  createRole,
+  updateRole,
+  deleteRole,
+} from '@/pages/manage/roleManage/service';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import RoleInfoModal from '@/pages/manage/roleManage/components/roleInfoModal';
 
@@ -14,7 +20,7 @@ const UserManage: React.FC<UserManageProps> = props => {
   const [menuData, setMenuData] = useState<Partial<MenuInfo>[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [option, setOption] = useState<'create' | 'update'>('create');
-  const [targetValue, setTargetValue] = useState<Partial<UserInfo>>({});
+  const [targetValue, setTargetValue] = useState<Partial<RoleInfo>>({});
 
   const getRoleMenus = async () => {
     const [resRoll, resMenu]: any = await Promise.all([
@@ -46,7 +52,6 @@ const UserManage: React.FC<UserManageProps> = props => {
   }, []);
 
   const modifyHandler = (record: RoleInfo) => {
-    console.log(record);
     setOption('update');
     setTargetValue(record);
     setModalVisible(true);
@@ -105,12 +110,64 @@ const UserManage: React.FC<UserManageProps> = props => {
       okText: '确定',
       cancelText: '取消',
       maskClosable: true,
-      onOk: async () => {},
+      onOk: async () => {
+        const res = await deleteRole(record);
+        if (res.status === 1) {
+          message.success('删除成功');
+          const newRoleData = roleData.filter(item => item.id != record.id);
+          setRoleData(newRoleData);
+        } else {
+          message.warning(res.error);
+          return Promise.reject(res.error);
+        }
+      },
     });
   };
 
   const submitHandler = async value => {
-    console.log(value);
+    switch (option) {
+      case 'create':
+        const resCreate = await createRole(value);
+        if (resCreate.status == 1) {
+          message.success('新建成功');
+          const temp = {
+            ...value,
+            id: resCreate.data,
+            menuList: value.menuList ? value.menuList : [],
+          };
+          let newState = [...roleData];
+          newState.push(temp);
+          setRoleData(newState);
+          setModalVisible(false);
+        } else {
+          message.warning(resCreate.error);
+        }
+        break;
+      case 'update':
+        if (
+          targetValue.name == value.name &&
+          targetValue.menuList == value.menuList
+        ) {
+          setModalVisible(false);
+          break;
+        }
+        const newRoleInfo: RoleInfo = { ...targetValue, ...value };
+        const res = await updateRole(newRoleInfo);
+        if (res.status == 1) {
+          message.success('更新成功');
+          setModalVisible(false);
+          let newRoleData = [...roleData];
+          let temp = newRoleData.find(x => x.id == newRoleInfo.id);
+          temp.name = newRoleInfo.name;
+          temp.menuList = newRoleInfo.menuList;
+          setRoleData(newRoleData);
+        } else {
+          message.warning(res.error);
+        }
+        break;
+      default:
+        break;
+    }
   };
 
   return (
