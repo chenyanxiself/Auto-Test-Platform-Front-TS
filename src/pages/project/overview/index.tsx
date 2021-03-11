@@ -6,14 +6,13 @@ import {
   getProjectProgress,
   createList,
 } from '@/pages/project/overview/service';
+import { Button, Card, message, Progress, Select } from 'antd';
 import {
-  Button,
-  Card,
-  message,
-  Progress,
-  Select,
-} from 'antd';
-import { ContactsOutlined, CarOutlined, PlusOutlined, TeamOutlined } from '@ant-design/icons';
+  ContactsOutlined,
+  CarOutlined,
+  PlusOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 import styles from './index.less';
 import { ColumnsInfo, ProgressInfo } from './data';
 import CreateListModal from '@/pages/project/overview/components/createListModal';
@@ -21,7 +20,7 @@ import TaskDrawer from '@/pages/project/overview/components/taskDrawer';
 
 const tabList = [
   {
-    key: 'tab-1',
+    key: 'task-tab-1',
     tab: (
       <span style={{ fontSize: 14 }}>
         <CarOutlined />
@@ -30,7 +29,7 @@ const tabList = [
     ),
   },
   {
-    key: 'tab-2',
+    key: 'task-tab-2',
     tab: (
       <span style={{ fontSize: 14 }}>
         <ContactsOutlined />
@@ -39,7 +38,7 @@ const tabList = [
     ),
   },
   {
-    key: 'tab-3',
+    key: 'task-tab-3',
     tab: (
       <span style={{ fontSize: 14 }}>
         <TeamOutlined />
@@ -137,9 +136,9 @@ const Overview: React.FC<OverviewProps> = props => {
     getProgress();
   }, [props.trigger]);
 
-
   const tabChangeHandler = key => {
-    setTaskRelationType(parseInt(key.split('-')[1]));
+    const temp = key.split('-');
+    setTaskRelationType(parseInt(temp[temp.length - 1]));
   };
 
   const createListHandler = async value => {
@@ -159,7 +158,7 @@ const Overview: React.FC<OverviewProps> = props => {
     <Card
       tabList={tabList}
       onTabChange={key => tabChangeHandler(key)}
-      activeTabKey={`tab-${taskRelationType.toString()}` }
+      activeTabKey={`tab-${taskRelationType.toString()}`}
       bordered={false}
       loading={isLoading}
       bodyStyle={{ padding: 0 }}
@@ -172,9 +171,7 @@ const Overview: React.FC<OverviewProps> = props => {
         cancelHandler={() => setCreateListVisible(false)}
         finishHandler={createListHandler}
       />
-      <TaskDrawer
-        projectId={projectId}
-      />
+      <TaskDrawer projectId={projectId} />
     </Card>
   );
 };

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Table, Tag, Divider, Modal, message, Space } from 'antd';
+import { Button, Divider, message, Modal, Space, Table, Tag } from 'antd';
 import styles from './index.less';
 import {
-  getAllRoleList,
-  getAllMenu,
   createRole,
-  updateRole,
   deleteRole,
+  getAllMenu,
+  getAllRoleList,
+  updateRole,
 } from '@/pages/manage/roleManage/service';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import RoleInfoModal from '@/pages/manage/roleManage/components/roleInfoModal';
+import { useRequest } from 'umi';
 
 interface UserManageProps {
   [name: string]: any;
@@ -21,6 +22,17 @@ const UserManage: React.FC<UserManageProps> = props => {
   const [modalVisible, setModalVisible] = useState(false);
   const [option, setOption] = useState<'create' | 'update'>('create');
   const [targetValue, setTargetValue] = useState<Partial<RoleInfo>>({});
+
+  // const {data} = useRequest(getAllMenu,{
+  //   formatResult:({data})=>{
+  //     return data.map(item => {
+  //       return {
+  //         menuReg: item.menu_reg
+  //       }
+  //     })
+  //   }
+  // })
+  // console.log(data)
 
   const getRoleMenus = async () => {
     const [resRoll, resMenu]: any = await Promise.all([
