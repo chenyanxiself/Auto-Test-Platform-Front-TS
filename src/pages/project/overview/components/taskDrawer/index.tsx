@@ -290,9 +290,9 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
                   </Tooltip>
                   <div>
                     {cname} 创建于{' '}
-                    {props.currentTask.createTime
+                    {props.currentTask.create_time
                       ? new Date(
-                          +new Date(props.currentTask.createTime) +
+                          +new Date(props.currentTask.create_time) +
                             8 * 3600 * 1000,
                         )
                           .toISOString()
