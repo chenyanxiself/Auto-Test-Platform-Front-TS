@@ -189,7 +189,6 @@ const UserManage: React.FC<UserManageProps> = props => {
             pagination={false}
           />
         </div>
-        <div className={styles.bodyRight}>teet</div>
       </div>
       <RoleInfoModal
         visible={modalVisible}

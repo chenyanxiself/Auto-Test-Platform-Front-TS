@@ -46,7 +46,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = props => {
       return Promise.reject('用户名不能为空!');
     } else if (!value) {
       return Promise.reject('请输入用户名!');
-    } else if (/^[a-zA-Z0-9_]{1,12}$/.test(value)) {
+    } else if (/^[a-zA-Z0-9_]{4,12}$/.test(value)) {
       return Promise.resolve();
     } else {
       return Promise.reject('用户名为4到12位,英文、数字、下划线!');
@@ -65,6 +65,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = props => {
         <Form.Item
           name={'name'}
           label={'用户名'}
+          required={true}
           rules={[{ validator: validatorUserName }]}
         >
           <Input
