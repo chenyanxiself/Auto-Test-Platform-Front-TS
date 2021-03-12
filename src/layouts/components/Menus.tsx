@@ -8,8 +8,8 @@ const { SubMenu } = Menu;
 export default props => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [openKeys, setOpenKeys] = useState([]);
-  const [rootSubmenuKeys, setRootSubmenuKeyss] = useState([]);
   const [menusList, setMenuList] = useState([]);
+  const [menusData, setMenuData] = useState([]);
 
   useEffect(() => {
     const getMenu = async () => {
@@ -20,8 +20,10 @@ export default props => {
           item.icon = navigationIcon[item.icon];
           return item;
         });
-        let rootMenus = formatRegData.filter(item => item.parentId == null);
-        const childMenus = formatRegData.filter(item => item.parentId != null);
+        let newRegData = [...formatRegData];
+        let rootMenus = newRegData.filter(item => item.parentId == null);
+        const childMenus = newRegData.filter(item => item.parentId != null);
+        let opks = [];
         childMenus.forEach(citem => {
           let target_menu = rootMenus.find(item => item.id == citem.parentId);
           if (target_menu.childMenu instanceof Array) {
@@ -29,8 +31,13 @@ export default props => {
           } else {
             target_menu.childMenu = [citem];
           }
+          if (opks.indexOf(target_menu.id) == -1) {
+            opks.push(target_menu.id.toString());
+          }
         });
+        setMenuData(formatRegData);
         setMenuList(rootMenus);
+        setOpenKeys(opks);
       } else {
         message.warning(res.error);
       }
@@ -40,75 +47,45 @@ export default props => {
 
   useEffect(() => {
     const pathname = history.location.pathname;
-    const data = menusList.reduce(
-      (pre, cur) => {
-        if (cur.childMenu != undefined && cur.childMenu.length > 0) {
-          pre.rootSubmenuKeys.push(cur.path);
-          const isSelected = cur.childMenu.find(item => {
-            return item.regExp.test(pathname);
-          });
-          if (isSelected) {
-            pre.openKeys.push(cur.path);
-            pre.selectedKeys.push(isSelected.path);
-          }
-        } else {
-          if (cur.regExp.test(pathname)) {
-            pre.selectedKeys.push(cur.path);
-          }
-        }
-        return pre;
-      },
-      {
-        selectedKeys: [],
-        openKeys: [],
-        rootSubmenuKeys: [],
-      },
-    );
-    setSelectedKeys(data.selectedKeys);
-    setOpenKeys(data.openKeys);
-    setRootSubmenuKeyss(data.rootSubmenuKeys);
-  }, [history.location.pathname, menusList]);
-
-  const onOpenChange = openKeys => {
-    const latestOpenKey = openKeys.find(key => openKeys.indexOf(key) === -1);
-    if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-      setOpenKeys(openKeys);
-    } else {
-      setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+    const target = menusData.find(item => {
+      return item.regExp.test(pathname);
+    });
+    if (target) {
+      setSelectedKeys([target.id.toString()]);
     }
-  };
+  }, [history.location.pathname, menusData]);
 
-  const onMenuClick = item => {
-    let { key, keyPath } = item;
-    if (key !== history.location.pathname) {
-      setSelectedKeys(keyPath);
-      history.push(key);
+  const onMenuClick = record => {
+    const { key } = record;
+    const target = menusData.find(item => item.id == parseInt(key));
+    if (target.path !== history.location.pathname) {
+      setSelectedKeys(key.toString());
+      history.push(target.path);
     }
   };
 
   return (
     <Menu
       mode="inline"
-      openKeys={openKeys}
-      onOpenChange={onOpenChange}
       theme="dark"
       onClick={onMenuClick}
       selectedKeys={selectedKeys}
+      triggerSubMenuAction={'click'}
     >
       {menusList.map(item => {
         if (item.childMenu != undefined && item.childMenu.length > 0) {
           return (
-            <SubMenu key={item.path} icon={item.icon} title={item.name}>
+            <SubMenu key={item.id} icon={item.icon} title={item.name}>
               {item.childMenu.map(childItem => {
                 return (
-                  <Menu.Item key={childItem.path}>{childItem.name}</Menu.Item>
+                  <Menu.Item key={childItem.id}>{childItem.name}</Menu.Item>
                 );
               })}
             </SubMenu>
           );
         } else {
           return (
-            <Menu.Item key={item.path} icon={item.icon}>
+            <Menu.Item key={item.id} icon={item.icon}>
               {item.name}
             </Menu.Item>
           );
