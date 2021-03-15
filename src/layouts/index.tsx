@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Layout, message } from 'antd';
 import { connect } from 'umi';
 import { getCurrentUser } from '@/layouts/service';
@@ -12,6 +12,9 @@ import { useHover } from '@umijs/hooks';
 
 const { Sider, Content, Header } = Layout;
 const Index = props => {
+  const [expand, setExpand] = useState(false);
+  const timeoutRef = useRef();
+
   const getData = async () => {
     const res = await getCurrentUser();
     if (res.status === 1) {
@@ -25,15 +28,26 @@ const Index = props => {
     getData();
   }, []);
 
-  const [isHovering, hoverRef] = useHover<HTMLDivElement>();
+  const [_, hoverRef] = useHover<HTMLDivElement>({
+    onEnter: () => {
+      // @ts-ignore
+      timeoutRef.current = setTimeout(() => {
+        setExpand(true);
+      }, 400);
+    },
+    onLeave: () => {
+      clearTimeout(timeoutRef.current);
+      setExpand(false);
+    },
+  });
   return (
     <ConfigProvider locale={zhCN}>
       <Layout style={{ height: '100%' }}>
-        <Sider collapsed={!isHovering}>
+        <Sider collapsed={!expand}>
           <div className={styles.leftNav} ref={hoverRef}>
             <header className={styles.leftNavHeader}>
               <img src={logo} alt="logo" />
-              {isHovering ? <h1>Event</h1> : null}
+              {expand ? <h1>Event</h1> : null}
             </header>
             <Menus />
           </div>
