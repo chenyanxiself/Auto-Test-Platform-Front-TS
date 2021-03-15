@@ -8,12 +8,14 @@ import { ConfigProvider } from 'antd';
 import styles from './index.less';
 import logo from '@/assert/logo.png';
 import Menus from '@/layouts/components/Menus';
-import { useHover } from '@umijs/hooks';
+import { useHover, useDebounceFn } from '@umijs/hooks';
 
 const { Sider, Content, Header } = Layout;
 const Index = props => {
   const [expand, setExpand] = useState(false);
-  const timeoutRef = useRef();
+  const { run } = useDebounceFn(() => {
+    setExpand(true);
+  }, 380);
 
   const getData = async () => {
     const res = await getCurrentUser();
@@ -26,23 +28,17 @@ const Index = props => {
 
   useEffect(() => {
     getData();
-    return () => {
-      clearTimeout(timeoutRef.current);
-    };
   }, []);
 
   const [_, hoverRef] = useHover<HTMLDivElement>({
     onEnter: () => {
-      // @ts-ignore
-      timeoutRef.current = setTimeout(() => {
-        setExpand(true);
-      }, 400);
+      run();
     },
     onLeave: () => {
-      clearTimeout(timeoutRef.current);
       setExpand(false);
     },
   });
+
   return (
     <ConfigProvider locale={zhCN}>
       <Layout style={{ height: '100%' }}>
