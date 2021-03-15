@@ -26,6 +26,9 @@ const Index = props => {
 
   useEffect(() => {
     getData();
+    return () => {
+      clearTimeout(timeoutRef.current);
+    };
   }, []);
 
   const [_, hoverRef] = useHover<HTMLDivElement>({
