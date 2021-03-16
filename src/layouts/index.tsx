@@ -13,7 +13,7 @@ import { useHover, useDebounceFn } from '@umijs/hooks';
 const { Sider, Content, Header } = Layout;
 const Index = props => {
   const [expand, setExpand] = useState(false);
-  const { run } = useDebounceFn(() => {
+  const { run, cancel } = useDebounceFn(() => {
     setExpand(true);
   }, 380);
 
@@ -35,6 +35,7 @@ const Index = props => {
       run();
     },
     onLeave: () => {
+      cancel();
       setExpand(false);
     },
   });
