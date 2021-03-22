@@ -158,7 +158,7 @@ const Overview: React.FC<OverviewProps> = props => {
     <Card
       tabList={tabList}
       onTabChange={key => tabChangeHandler(key)}
-      activeTabKey={`tab-${taskRelationType.toString()}`}
+      activeTabKey={`task-tab-${taskRelationType.toString()}`}
       bordered={false}
       loading={isLoading}
       bodyStyle={{ padding: 0 }}
