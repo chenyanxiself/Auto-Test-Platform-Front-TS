@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Menu, Modal, message, Table, Form, Checkbox } from 'antd';
+import {
+  Card,
+  Button,
+  Menu,
+  Modal,
+  message,
+  Table,
+  Form,
+  Checkbox,
+  Empty,
+} from 'antd';
 import styles from './index.less';
 import CreateSuiteModal from '@/pages/project/testsuite/components/createSuiteModal';
 import ModifySuiteModal from '@/pages/project/testsuite/components/modifySuiteModal';
@@ -13,7 +23,10 @@ import {
   executeSuite,
 } from './service';
 import { getApiCaseByCondition } from '@/pages/project/apicase/service';
-import { ExclamationCircleOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import {
+  ExclamationCircleOutlined,
+  PlayCircleOutlined,
+} from '@ant-design/icons';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import component from '@/pages/project/components/dndComponent';
@@ -23,7 +36,7 @@ import { getEnvByProjectId } from '@/pages/project/service';
 
 const { confirm } = Modal;
 
-const TestSuite = (props) => {
+const TestSuite = props => {
   const [isModifyVisible, setModifyVisible] = useState(false);
   const [isCreateVisible, setCreateVisible] = useState(false);
   const [isExecuteVisible, setExecuteVisible] = useState(false);
@@ -93,7 +106,7 @@ const TestSuite = (props) => {
     {
       title: '请求方式',
       dataIndex: 'method',
-      render: (method) => {
+      render: method => {
         return method === 1 ? 'Get' : 'Post';
       },
     },
@@ -107,7 +120,7 @@ const TestSuite = (props) => {
     },
   ];
 
-  const deleteHandler = (suiteId) => {
+  const deleteHandler = suiteId => {
     confirm({
       title: '是否确认删除?',
       icon: <ExclamationCircleOutlined />,
@@ -133,21 +146,27 @@ const TestSuite = (props) => {
         size={'small'}
         style={{ marginRight: 10 }}
         onClick={() => setCreateVisible(true)}
-      >新建</Button>
+      >
+        新建
+      </Button>
       <Button
         type="primary"
         size={'small'}
         style={{ marginRight: 10 }}
         onClick={() => setModifyVisible(true)}
         disabled={!selectedKey}
-      >修改</Button>
+      >
+        修改
+      </Button>
       <Button
         type="primary"
         size={'small'}
         danger={true}
         disabled={!selectedKey}
         onClick={() => deleteHandler(selectedKey)}
-      >删除</Button>
+      >
+        删除
+      </Button>
     </div>
   );
 
@@ -162,7 +181,7 @@ const TestSuite = (props) => {
     </Button>
   );
 
-  const createFinishHandler = async (value) => {
+  const createFinishHandler = async value => {
     const res = await createSuite(projectId, value.suiteName);
     if (res.status === 1) {
       message.success('新建成功');
@@ -173,12 +192,8 @@ const TestSuite = (props) => {
     }
   };
 
-  const modifyFinishHandler = async (keys) => {
-    const res = await updateSuiteCaseRelation(
-      selectedKey,
-      projectId,
-      keys,
-    );
+  const modifyFinishHandler = async keys => {
+    const res = await updateSuiteCaseRelation(selectedKey, projectId, keys);
     if (res.status === 1) {
       message.success('编辑成功');
       getRelatedCase();
@@ -188,28 +203,34 @@ const TestSuite = (props) => {
     }
   };
 
-  const executeFinishHandler = async (values) => {
-    const res = await executeSuite(projectId, selectedKey, values)
+  const executeFinishHandler = async values => {
+    const res = await executeSuite(projectId, selectedKey, values);
     if (res.status === 1) {
-      message.success('请在测试报告页面查看结果')
-      setExecuteVisible(false)
+      message.success('请在测试报告页面查看结果');
+      setExecuteVisible(false);
     } else {
-      message.warning(res.error)
+      message.warning(res.error);
     }
   };
 
-
   const moveRow = async (dragIndex, hoverIndex) => {
     const dragRow = relatedCase[dragIndex];
-    const newDataSource = update(relatedCase,
-      {
-        $splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]],
-      },
-    );
+    const newDataSource = update(relatedCase, {
+      $splice: [
+        [dragIndex, 1],
+        [hoverIndex, 0, dragRow],
+      ],
+    });
     const beforeId = relatedCase[dragIndex].id;
     const afterId = relatedCase[hoverIndex].id;
-    const type = dragIndex > hoverIndex ? 1 : 2;  //'1'代表after的上方  '2'代表after的下方
-    const res = await updateSuiteCaseSort(projectId, selectedKey, beforeId, afterId, type);
+    const type = dragIndex > hoverIndex ? 1 : 2; //'1'代表after的上方  '2'代表after的下方
+    const res = await updateSuiteCaseSort(
+      projectId,
+      selectedKey,
+      beforeId,
+      afterId,
+      type,
+    );
     if (res.status === 1) {
       setRelatedCase(newDataSource);
     } else {
@@ -236,9 +257,7 @@ const TestSuite = (props) => {
           theme={'light'}
         >
           {suiteSource.map(item => {
-            return (
-              <Menu.Item key={item.id}>{item.name}</Menu.Item>
-            );
+            return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
           })}
         </Menu>
       </Card>
@@ -251,21 +270,25 @@ const TestSuite = (props) => {
         loading={isRightLoading}
         extra={caseExtra}
       >
-        <DndProvider backend={HTML5Backend}>
-          <Table
-            columns={columns}
-            dataSource={relatedCase}
-            components={component}
-            pagination={false}
-            rowKey={'id'}
-            showHeader={false}
-            //@ts-ignore
-            onRow={(record, index) => ({
-              index,
-              moveRow: moveRow,
-            })}
-          />
-        </DndProvider>
+        {relatedCase.length > 0 ? (
+          <DndProvider backend={HTML5Backend}>
+            <Table
+              columns={columns}
+              dataSource={relatedCase}
+              components={component}
+              pagination={false}
+              rowKey={'id'}
+              showHeader={false}
+              //@ts-ignore
+              onRow={(record, index) => ({
+                index,
+                moveRow: moveRow,
+              })}
+            />
+          </DndProvider>
+        ) : (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        )}
       </Card>
       <CreateSuiteModal
         visible={isCreateVisible}
@@ -285,7 +308,6 @@ const TestSuite = (props) => {
         finishHandler={executeFinishHandler}
         projectId={projectId}
       />
-
     </div>
   );
 };

@@ -129,6 +129,14 @@ const Overview: React.FC<OverviewProps> = props => {
   };
 
   useEffect(() => {
+    return () => {
+      props.dispatch({
+        type: 'overview/reset',
+      });
+    };
+  }, []);
+
+  useEffect(() => {
     getData();
   }, [props.trigger, taskRelationType, taskFilterStatus]);
 

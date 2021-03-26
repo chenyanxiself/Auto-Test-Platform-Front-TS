@@ -13,11 +13,16 @@ import {
   FrownFilled,
   FrownOutlined,
 } from '@ant-design/icons';
-import { createModule, updateModule, getAllModule, deleteModule } from '@/pages/project/case/service';
+import {
+  createModule,
+  updateModule,
+  getAllModule,
+  deleteModule,
+} from '@/pages/project/case/service';
 import { connect } from 'umi';
 import styles from './index.less';
 
-const ModuleTree = (props) => {
+const ModuleTree = props => {
   const [treeData, setTreeData] = useState([]);
   const [option, setOption] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -26,8 +31,7 @@ const ModuleTree = (props) => {
     getData();
   }, []);
 
-
-  const getDeleteIdList = (id) => {
+  const getDeleteIdList = id => {
     function getTargetTotal(source, targetId) {
       if (source.id === targetId) {
         return source;
@@ -77,7 +81,7 @@ const ModuleTree = (props) => {
         return '创建根模块';
     }
   };
-  const deleteHandler = (id) => {
+  const deleteHandler = id => {
     return Modal.confirm({
       title: '是否确认删除?',
       icon: <ExclamationCircleOutlined />,
@@ -97,15 +101,13 @@ const ModuleTree = (props) => {
     });
   };
 
-  const processData = (list) => {
+  const processData = list => {
     let curList = list.map(item => {
       return {
         title: (
           <>
-                <span>
-                  {item.name}
-                </span>
-            {item.id === props.selectedModule.id ?
+            <span>{item.name}</span>
+            {item.id === props.selectedModule.id ? (
               <div style={{ float: 'right' }}>
                 <Tooltip title={'修改'}>
                   <EditOutlined
@@ -133,14 +135,15 @@ const ModuleTree = (props) => {
                     onClick={() => deleteHandler(item.id)}
                   />
                 </Tooltip>
-              </div> : null}
+              </div>
+            ) : null}
           </>
         ),
         key: item.id,
         name: item.name,
         id: item.id,
         parentId: item.parent_id,
-        icon: ({ selected }) => selected ? <SmileOutlined /> : <FrownOutlined />,
+        // icon: ({ selected }) => selected ? <SmileOutlined /> : <FrownOutlined />,
       };
     });
     //筛选出 包含parentId的数组；
@@ -149,7 +152,7 @@ const ModuleTree = (props) => {
     let childrens = curList.filter(value => value.parentId !== 0);
     let translator = (parents, childrens) => {
       //遍历每一个父数组
-      parents.forEach((parent) => {
+      parents.forEach(parent => {
         //遍历子数组 判断子节点的parentId等于父数组的id，
         childrens.forEach((child, index) => {
           if (child.parentId === parent.id) {
@@ -160,10 +163,11 @@ const ModuleTree = (props) => {
             //让当前子节点作为唯一的父节点，去递归查找其对应的子节点
             translator([child], temp);
             //把找到子节点放入父节点的ChildNodes属性中
-            typeof parent.children !== 'undefined' ? parent.children.push(child) : parent.children = [child];
+            typeof parent.children !== 'undefined'
+              ? parent.children.push(child)
+              : (parent.children = [child]);
           }
         });
-
       });
     };
     translator(parents, childrens);
@@ -194,14 +198,23 @@ const ModuleTree = (props) => {
       });
     }
   };
-  const finishHandler = async (value) => {
+  const finishHandler = async value => {
     var res;
     if (option === 0) {
       res = await createModule(value.name, 0, props.projectId);
     } else if (option === 1) {
-      res = await createModule(value.name, props.selectedModule.id, props.projectId);
+      res = await createModule(
+        value.name,
+        props.selectedModule.id,
+        props.projectId,
+      );
     } else {
-      res = await updateModule(value.name, props.selectedModule.id, props.projectId, props.selectedModule.parentId);
+      res = await updateModule(
+        value.name,
+        props.selectedModule.id,
+        props.projectId,
+        props.selectedModule.parentId,
+      );
     }
     if (res.status === 1) {
       message.success(option === 2 ? '编辑成功' : '创建成功');
@@ -223,7 +236,9 @@ const ModuleTree = (props) => {
           treeData={processData(treeData)}
           blockNode={true}
           onSelect={selectHandler}
-          selectedKeys={props.selectedModule.id ? [props.selectedModule.id] : []}
+          selectedKeys={
+            props.selectedModule.id ? [props.selectedModule.id] : []
+          }
           defaultExpandAll={true}
         />
       );
@@ -254,10 +269,7 @@ const ModuleTree = (props) => {
           onCancel={() => setVisible(false)}
           forceRender={true}
         >
-          <Form
-            form={form}
-            onFinish={finishHandler}
-          >
+          <Form form={form} onFinish={finishHandler}>
             <Form.Item
               label={'模块名'}
               name={'name'}
@@ -267,10 +279,10 @@ const ModuleTree = (props) => {
             >
               <Input placeholder={'请输入模块名'} autoComplete={'off'} />
             </Form.Item>
-            <Form.Item
-              wrapperCol={{ offset: 5 }}
-            >
-              <Button htmlType={'submit'} type={'primary'}>创建</Button>
+            <Form.Item wrapperCol={{ offset: 5 }}>
+              <Button htmlType={'submit'} type={'primary'}>
+                创建
+              </Button>
             </Form.Item>
           </Form>
         </Modal>
@@ -278,7 +290,7 @@ const ModuleTree = (props) => {
     </div>
   );
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     selectedModule: state.case.selectedModule,
   };

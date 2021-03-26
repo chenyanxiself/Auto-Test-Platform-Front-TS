@@ -10,6 +10,7 @@ import {
   Tooltip,
   Avatar,
   Divider,
+  Tabs,
 } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { connect } from 'umi';
@@ -32,6 +33,9 @@ import ProjectMember from '@/pages/project/components/projectMember';
 import ProjectImgUpload from '@/pages/project/components/projectImgUpload';
 import { delProjectImgApi } from '@/pages/project/service';
 import FullEditor from '@/pages/project/components/fullEditor';
+import RelevanceCase from '@/pages/project/overview/components/taskDrawer/RelevanceCase';
+
+const { TabPane } = Tabs;
 
 interface TaskDrawerProps {
   dataSource: ColumnsInfo[];
@@ -68,8 +72,6 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
     });
   };
 
-  const controls = ['bold', 'italic', 'underline', 'text-color'];
-
   const drawerVisibleChangeHandler = async visible => {
     if (visible) {
       setDrawerLoading(true);
@@ -82,6 +84,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
           taskStatus: res.data.status,
           taskFollower: res.data.follower,
           attachment: processAttachment(res.data.img),
+          relevanceCase: res.data.relevance_case,
         });
       } else {
         message.warning(res.error);
@@ -248,7 +251,6 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
       afterVisibleChange={drawerVisibleChangeHandler}
       onClose={closeDrawerHandler}
       forceRender={true}
-      title={'任务详情'}
       width={'60%'}
     >
       <Spin
@@ -264,7 +266,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
                     value={form.getFieldValue('taskTitle')}
                     onSave={saveTitleHandle}
                     style={{
-                      width: '100%',
+                      width: '90%',
                       fontSize: 20,
                     }}
                   />
@@ -302,7 +304,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
                   </div>
                 </div>
               </Col>
-              <Divider />
+              <Divider style={{ marginTop: 18, marginBottom: 18 }} />
               <Col span={24}>
                 <div className={styles.label}>任务描述</div>
               </Col>
@@ -310,7 +312,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
                 <Form.Item name={'description'}>
                   <FullEditor
                     onSave={saveDescriptionHandle}
-                    style={{ height: 300 }}
+                    style={{ height: 280 }}
                   />
                 </Form.Item>
               </Col>
@@ -319,15 +321,23 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
                   <ProjectMember onSave={saveFollowerHandle} />
                 </Form.Item>
               </Col>
-              <Divider style={{ marginTop: 0 }} />
               <Col span={24}>
-                <Form.Item name={'attachment'}>
-                  <ProjectImgUpload
-                    customRequestHandle={customRequestHandle}
-                    removeHandle={removeHandle}
-                    maxLength={3}
-                  />
-                </Form.Item>
+                <Tabs defaultActiveKey="1">
+                  <TabPane tab="附件" key="1">
+                    <Form.Item name={'attachment'}>
+                      <ProjectImgUpload
+                        customRequestHandle={customRequestHandle}
+                        removeHandle={removeHandle}
+                        maxLength={3}
+                      />
+                    </Form.Item>
+                  </TabPane>
+                  <TabPane tab="关联" key="2">
+                    <Form.Item name={'relevanceCase'}>
+                      <RelevanceCase />
+                    </Form.Item>
+                  </TabPane>
+                </Tabs>
               </Col>
             </Row>
           </Form>

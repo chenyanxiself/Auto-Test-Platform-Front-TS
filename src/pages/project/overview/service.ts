@@ -1,19 +1,27 @@
 import { request } from 'umi';
 import urls from '@/utils/urls';
 
-export const getTaskByCondition = (projectId, keyword = null, relationType, filterType) => {
-  let params = { project_id: projectId, relation_type: relationType, filter_type: filterType };
+export const getTaskByCondition = (
+  projectId,
+  keyword = null,
+  relationType,
+  filterType,
+) => {
+  let params = {
+    project_id: projectId,
+    relation_type: relationType,
+    filter_type: filterType,
+  };
   if (keyword) {
     params['keyword'] = keyword;
   }
   return request(urls.getTaskByConditionUrl, { method: 'get', params });
 };
 
-export const getProjectProgress = (projectId) => {
+export const getProjectProgress = projectId => {
   let params = { project_id: projectId };
   return request(urls.getProjectProgressUrl, { method: 'get', params });
 };
-
 
 export const deleteTaskList = (id, projectId) => {
   let data = { id: id, project_id: projectId };
@@ -36,11 +44,21 @@ export const updateTask = (projectId, taskId, value, key) => {
 };
 
 export const updateListSort = (projectId, startIndex, endIndex) => {
-  let data = { start_index: startIndex, end_index: endIndex, project_id: projectId };
+  let data = {
+    start_index: startIndex,
+    end_index: endIndex,
+    project_id: projectId,
+  };
   return request(urls.updateListSortUrl, { method: 'post', data });
 };
 
-export const updateTaskSort = (projectId, startListId, endListId, startIndex, endIndex) => {
+export const updateTaskSort = (
+  projectId,
+  startListId,
+  endListId,
+  startIndex,
+  endIndex,
+) => {
   let data = {
     start_index: startIndex,
     end_index: endIndex,
@@ -59,7 +77,16 @@ export const createList = (projectId, title) => {
   return request(urls.createListUrl, { method: 'post', data });
 };
 
-export const createTask = (projectId, listId, title, priority, follower, description, attachment) => {
+export const createTask = (
+  projectId,
+  listId,
+  title,
+  priority,
+  follower,
+  description,
+  attachment,
+  relevanceCase,
+) => {
   let data = {
     project_id: projectId,
     list_id: listId,
@@ -68,10 +95,10 @@ export const createTask = (projectId, listId, title, priority, follower, descrip
     follower,
     description,
     attachment,
+    relevance_case: relevanceCase,
   };
   return request(urls.createTaskUrl, { method: 'post', data });
 };
-
 
 export const uploadTaskImgApi = (data, projectId, taskId = null) => {
   let form = new FormData();
@@ -86,12 +113,10 @@ export const uploadTaskImgApi = (data, projectId, taskId = null) => {
   });
 };
 
-
 export const getTaskDetail = (projectId, taskId) => {
   const params = {
-    'project_id': projectId,
-    'task_id': taskId,
+    project_id: projectId,
+    task_id: taskId,
   };
   return request(urls.getTaskDetailUrl, { method: 'get', params });
 };
-

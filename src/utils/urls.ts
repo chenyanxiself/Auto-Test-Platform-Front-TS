@@ -45,6 +45,7 @@ export default {
   deleteModuleUrl: '/project/case/deleteModule',
   getAllModuleUrl: '/project/case/getAllModule',
   getCaseByModuleIdUrl: '/project/case/getCaseByModuleId',
+  getCaseByIdUrl: '/project/case/getCaseById',
   createProjectCaseUrl: '/project/case/createProjectCase',
   updateProjectCaseUrl: '/project/case/updateProjectCase',
   deleteProjectCaseUrl: '/project/case/deleteProjectCase',

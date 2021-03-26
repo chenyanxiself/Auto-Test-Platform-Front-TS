@@ -16,6 +16,7 @@ export interface ModelType {
     setTrigger: Reducer<ModelState>;
     setProgress: Reducer<ModelState>;
     setCurrentTask: Reducer<ModelState>;
+    reset: Reducer<ModelState>;
   };
 }
 
@@ -42,6 +43,17 @@ const Model: ModelType = {
     },
     setCurrentTask(state, action) {
       return { ...state, currentTask: action.payload };
+    },
+    reset() {
+      return {
+        columnsList: [],
+        trigger: true,
+        progress: {
+          total: 0,
+          finish: 0,
+        },
+        currentTask: {},
+      };
     },
   },
 };

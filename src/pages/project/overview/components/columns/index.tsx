@@ -8,7 +8,7 @@ import {
   ExclamationCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { Button, Form, Input, message, Modal, Row, Col } from 'antd';
+import { Button, Form, Input, message, Modal, Row, Col, Tabs } from 'antd';
 import { connect, Dispatch } from 'umi';
 import {
   deleteTaskList,
@@ -22,6 +22,9 @@ import ProjectImgUpload from '@/pages/project/components/projectImgUpload';
 import { uploadTaskImgApi } from '@/pages/project/overview/service';
 import { delProjectImgApi } from '@/pages/project/service';
 import FullEditor from '@/pages/project/components/fullEditor';
+import RelevanceCase from '@/pages/project/overview/components/taskDrawer/RelevanceCase';
+
+const { TabPane } = Tabs;
 
 interface ColumnsProps {
   columns: ColumnsInfo;
@@ -139,16 +142,22 @@ const Columns: React.FC<ColumnsProps> = props => {
                 </Form.Item>
               </Col>
               <Col span={24}>
-                <div style={{ marginBottom: 5 }}>附件 (仅支持图片格式)</div>
-              </Col>
-              <Col span={24}>
-                <Form.Item name={'attachment'}>
-                  <ProjectImgUpload
-                    customRequestHandle={customRequestHandle}
-                    removeHandle={removeHandle}
-                    maxLength={3}
-                  />
-                </Form.Item>
+                <Tabs defaultActiveKey="1">
+                  <TabPane tab="附件 (仅支持图片格式)" key="1">
+                    <Form.Item name={'attachment'}>
+                      <ProjectImgUpload
+                        customRequestHandle={customRequestHandle}
+                        removeHandle={removeHandle}
+                        maxLength={3}
+                      />
+                    </Form.Item>
+                  </TabPane>
+                  <TabPane tab="关联" key="2">
+                    <Form.Item name={'relevanceCase'}>
+                      <RelevanceCase />
+                    </Form.Item>
+                  </TabPane>
+                </Tabs>
               </Col>
             </Row>
           </Form>
@@ -162,6 +171,9 @@ const Columns: React.FC<ColumnsProps> = props => {
         const follower = value.taskFollower
           ? value.taskFollower.map(item => item.id)
           : [];
+        const relevanceCase = value.relevanceCase
+          ? value.relevanceCase.map(item => item.id)
+          : [];
         const priority = value.taskPriority ? value.taskPriority : 3;
         const res = await createTask(
           props.projectId,
@@ -171,6 +183,7 @@ const Columns: React.FC<ColumnsProps> = props => {
           follower,
           value.description,
           attachment,
+          relevanceCase,
         );
         if (res.status === 1) {
           props.dispatch({

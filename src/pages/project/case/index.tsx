@@ -26,8 +26,16 @@ const Case = props => {
   const [currentCase, setCurrentCase] = useState({});
   const projectId = parseInt(props.match.params.id);
   const inputRef = useRef();
+
   useEffect(() => {
-    // @ts-ignore
+    return () => {
+      props.dispatch({
+        type: 'case/reset',
+      });
+    };
+  }, []);
+
+  useEffect(() => {
     getData();
   }, [props.selectedModule]);
 
