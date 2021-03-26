@@ -26,10 +26,10 @@ const RelevanceCase: React.FC<RelevanceCaseProps> = props => {
           renderItem={item => (
             <List.Item
               actions={[
-                // @ts-ignore
                 <Button
                   size={'small'}
                   type={'primary'}
+                  // @ts-ignore
                   onClick={() => viewHandler(item.id, item.project_id)}
                 >
                   查看
