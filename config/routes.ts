@@ -59,6 +59,16 @@ export default [
         component: '@/pages/project/testReport/detail',
         exact: true,
       },
+      {
+        path: '/project/:id/editor',
+        component: '@/pages/project/editor',
+        exact: true,
+      },
+      {
+        path: '/project/:id/editor/:eid/detail',
+        component: '@/pages/project/editor/detail',
+        exact: true,
+      },
       { path: '*', redirect: '/404', exact: true },
     ],
   },

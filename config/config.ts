@@ -5,7 +5,7 @@ export default defineConfig({
   nodeModulesTransform: {
     type: 'none',
   },
-  history: { type: 'hash' },
-  publicPath: './',
+  // history: { type: 'hash' },
+  // publicPath: './',
   routes,
 });

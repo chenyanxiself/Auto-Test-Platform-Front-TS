@@ -63,4 +63,8 @@ export default {
   uploadTaskImgUrl: '/project/overview/uploadTaskImg',
   delTaskImgUrl: '/project/overview/delTaskImg',
   getTaskDetailUrl: '/project/overview/getTaskDetail',
+  getAllEditorUrl: '/project/editor/getAllEditor',
+  getEditorByIdUrl: '/project/editor/getEditorById',
+  updateEditorUrl: '/project/editor/updateEditor',
+  createEditorUrl: '/project/editor/createEditor',
 };
