@@ -1,20 +1,18 @@
-import { Col, message, Row } from 'antd';
+import { Col, Row } from 'antd';
 import GGEditor, { Flow, withPropsAPI } from 'gg-editor';
 import { useParams } from 'umi';
-import React, { useEffect, useState } from 'react';
-import EditorMinimap from './components/EditorMinimap';
-import { FlowContextMenu } from './components/EditorContextMenu';
-import { FlowDetailPanel } from './components/EditorDetailPanel';
-import { FlowItemPanel } from './components/EditorItemPanel';
+import React, { useState } from 'react';
+import EditorMinimap from '../EditorMinimap';
+import { FlowContextMenu } from '../EditorContextMenu';
+import { FlowDetailPanel } from '../EditorDetailPanel';
+import { FlowItemPanel } from '../EditorItemPanel';
 import { FlowToolbar } from '../EditorToolbar';
 import styles from './index.less';
-import { updateEditor } from '@/pages/project/editor/service';
 
 GGEditor.setTrackable(false);
 
 interface FlowGraphProps {
   data: any;
-  // onChange: any
   onSave: any;
   propsAPI?: any;
 }
@@ -27,7 +25,7 @@ const FlowGraph: React.FC<FlowGraphProps> = props => {
 
   const saveHandler = async () => {
     setSaveLoading(true);
-    props.onSave(eId, propsAPI.save());
+    await props.onSave(eId, propsAPI.save());
     setSaveLoading(false);
   };
 

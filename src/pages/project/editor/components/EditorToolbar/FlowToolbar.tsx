@@ -47,11 +47,15 @@ const FlowToolbar: React.FC<FlowToolbarProps> = props => (
         }}
         style={{ marginRight: 8 }}
         size={'small'}
-        loading={props.loading}
       >
         返回
       </Button>
-      <Button onClick={props.clickHandler} type={'primary'} size={'small'}>
+      <Button
+        onClick={props.clickHandler}
+        type={'primary'}
+        size={'small'}
+        loading={props.loading}
+      >
         保存
       </Button>
     </div>

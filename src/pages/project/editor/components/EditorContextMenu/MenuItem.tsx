@@ -1,6 +1,6 @@
 import { Command } from 'gg-editor';
 import React from 'react';
-import IconFont from '../../common/IconFont';
+import IconFont from '../common/IconFont';
 import styles from './index.less';
 
 const upperFirst = (str: string) =>

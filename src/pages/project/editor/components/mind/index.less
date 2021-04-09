@@ -21,13 +21,23 @@
   flex-direction: column;
 }
 
-.editorSidebar {
-  background: @descriptions-bg;
+.editorContent {
   :global {
-    .g6-editor-minimap-container {
-      background: none !important ;
+    .graph-container canvas {
+      vertical-align: middle;
     }
   }
+}
+
+.editorSidebar {
+  background: @descriptions-bg;
+
+  :global {
+    .g6-editor-minimap-container {
+      background: none !important;
+    }
+  }
+
   &:first-child {
     border-right: 1px solid @item-active-bg;
   }

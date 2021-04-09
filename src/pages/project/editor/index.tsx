@@ -97,7 +97,14 @@ const Editor: React.FC<EditorProps> = props => {
     },
     content: {
       render: (_, row) => {
-        return <span>{`${row.creator} 创建于 ${row.createTime}`}</span>;
+        return (
+          <span>{`${row.updator} 更新于 ${new Date(
+            +new Date(row.updateTime) + 8 * 3600 * 1000,
+          )
+            .toISOString()
+            .replace(/T/g, ' ')
+            .replace(/\.[\d]{3}Z/, '')}`}</span>
+        );
       },
     },
     actions: {
@@ -185,7 +192,7 @@ const Editor: React.FC<EditorProps> = props => {
   );
   return (
     <>
-      <Card title={'列表'} bordered={false} extra={extra}>
+      <Card title={'图形编辑器'} bordered={false} extra={extra}>
         <ProList
           rowKey="id"
           dataSource={dataSource}

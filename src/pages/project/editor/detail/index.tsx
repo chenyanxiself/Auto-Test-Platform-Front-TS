@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Flow from '../components/flow';
+import Mind from '../components/mind';
 import { useParams } from 'umi';
 import { getEditorById, updateEditor } from '@/pages/project/editor/service';
 import { message } from 'antd';
@@ -44,6 +45,10 @@ const EditorDetail = props => {
   const renderEditor = () => {
     if (dataSource?.type == 1) {
       return <Flow data={dataSource.data} onSave={savehandler} />;
+    } else if (dataSource?.type == 2) {
+      return <Mind data={dataSource.data} onSave={savehandler} />;
+    } else {
+      return null;
     }
   };
   return <GGEditor className={styles.editor}>{renderEditor()}</GGEditor>;

@@ -64,5 +64,5 @@ export const navigationIcon = {
 
 export const editorType = {
   1: <Tag color="blue">流程图</Tag>,
-  2: <Tag color="#5BD8A6">脑图</Tag>,
+  2: <Tag color="#5BD8A6">思维导图</Tag>,
 };
