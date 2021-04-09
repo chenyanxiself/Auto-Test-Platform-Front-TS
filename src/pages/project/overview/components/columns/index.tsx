@@ -22,7 +22,7 @@ import ProjectImgUpload from '@/pages/project/components/projectImgUpload';
 import { uploadTaskImgApi } from '@/pages/project/overview/service';
 import { delProjectImgApi } from '@/pages/project/service';
 import FullEditor from '@/pages/project/components/fullEditor';
-import RelevanceCase from '@/pages/project/overview/components/taskDrawer/RelevanceCase';
+import RelevanceCase from '@/pages/project/overview/components/relevanceCase';
 
 const { TabPane } = Tabs;
 

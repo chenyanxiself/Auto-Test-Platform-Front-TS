@@ -33,7 +33,7 @@ import ProjectMember from '@/pages/project/components/projectMember';
 import ProjectImgUpload from '@/pages/project/components/projectImgUpload';
 import { delProjectImgApi } from '@/pages/project/service';
 import FullEditor from '@/pages/project/components/fullEditor';
-import RelevanceCase from '@/pages/project/overview/components/taskDrawer/RelevanceCase';
+import RelevanceCase from '@/pages/project/overview/components/relevanceCase';
 
 const { TabPane } = Tabs;
 

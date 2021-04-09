@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, List, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { history } from 'umi';
+import CreateRelvanceModal from '@/pages/project/overview/components/relevanceCase/CreateRelvanceModal';
 
 interface RelevanceCaseProps {
   value?: any;
@@ -26,10 +27,10 @@ const RelevanceCase: React.FC<RelevanceCaseProps> = props => {
           renderItem={item => (
             <List.Item
               actions={[
-                // @ts-ignore
                 <Button
                   size={'small'}
                   type={'primary'}
+                  // @ts-ignore
                   onClick={() => viewHandler(item.id, item.project_id)}
                 >
                   查看
@@ -55,7 +56,11 @@ const RelevanceCase: React.FC<RelevanceCaseProps> = props => {
         <PlusOutlined />
         添加
       </Button>
-      <Modal visible={visible} onCancel={() => setVisible(false)}></Modal>
+      <CreateRelvanceModal
+        visible={visible}
+        cancelHandler={() => setVisible(false)}
+        finishHandler={value => console.log(value)}
+      />
     </div>
   );
 };
