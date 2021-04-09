@@ -63,7 +63,7 @@ const Editor: React.FC<EditorProps> = props => {
       cancelText: '取消',
       maskClosable: true,
       onOk: async () => {
-        let res = await updateEditor(record.id, projectId, null, 1);
+        let res = await updateEditor(record.id, projectId, null, null, 1);
         if (res.status === 1) {
           message.success('删除成功');
           getData();
@@ -119,10 +119,16 @@ const Editor: React.FC<EditorProps> = props => {
     },
   };
 
-  const finishHandler = async (record: Partial<EditorInfo>) => {
-    const title = record.title;
+  const finishHandler = async record => {
+    const title = record.newTitle;
     setConfirmLoading(true);
-    let res = await updateEditor(currentEditor.id, projectId, title, null);
+    let res = await updateEditor(
+      currentEditor.id,
+      projectId,
+      title,
+      null,
+      null,
+    );
     setConfirmLoading(false);
     if (res.status === 1) {
       message.success('修改成功');
@@ -198,7 +204,7 @@ const Editor: React.FC<EditorProps> = props => {
         <Form form={form} onFinish={finishHandler}>
           <Form.Item
             label={'新编辑器名'}
-            name={'title'}
+            name={'newTitle'}
             rules={[{ required: true, message: '必填' }]}
             wrapperCol={{ span: 14 }}
             labelCol={{ span: 5 }}

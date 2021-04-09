@@ -3,7 +3,7 @@ export interface EditorInfo {
   projectId: number;
   title: string;
   type: number | string;
-  data: string;
+  data: any;
   creator: string;
   createTime: string;
   updator: string;

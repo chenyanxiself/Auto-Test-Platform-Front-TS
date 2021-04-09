@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Flow from '../components/flow';
 import { useParams } from 'umi';
-import { getEditorById } from '@/pages/project/editor/service';
+import { getEditorById, updateEditor } from '@/pages/project/editor/service';
 import { message } from 'antd';
 import { EditorInfo } from '@/pages/project/editor/data';
+import styles from './index.less';
+import GGEditor from 'gg-editor';
 
 const EditorDetail = props => {
   const params = useParams<any>();
@@ -17,19 +19,34 @@ const EditorDetail = props => {
   const getData = async () => {
     const res = await getEditorById(editorId);
     if (res.status === 1) {
+      res.data.data = JSON.parse(res.data.data);
       setDataSource(res.data);
     } else {
       message.warning(res.error);
     }
   };
-  const renderComponent = () => {
-    if (dataSource?.type == 1) {
-      return <Flow data={dataSource.data} />;
+
+  const savehandler = async (eId, data) => {
+    let res = await updateEditor(
+      eId,
+      projectId,
+      null,
+      JSON.stringify(data),
+      null,
+    );
+    if (res.status === 1) {
+      message.success('修改成功');
     } else {
-      return <div>{JSON.stringify(dataSource)}</div>;
+      message.warning(res.error);
     }
   };
-  return renderComponent();
+
+  const renderEditor = () => {
+    if (dataSource?.type == 1) {
+      return <Flow data={dataSource.data} onSave={savehandler} />;
+    }
+  };
+  return <GGEditor className={styles.editor}>{renderEditor()}</GGEditor>;
 };
 
 export default EditorDetail;
