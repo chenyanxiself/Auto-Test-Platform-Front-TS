@@ -5,6 +5,7 @@ import {
   ExclamationCircleOutlined,
   HomeOutlined,
 } from '@ant-design/icons';
+import { Tag } from 'antd';
 
 export const priorityEnum = {
   1: (
@@ -59,4 +60,9 @@ export const navigationIcon = {
   workspace: <HomeOutlined />,
   project: <AppstoreOutlined />,
   manage: <BarsOutlined />,
+};
+
+export const editorType = {
+  1: <Tag color="blue">流程图</Tag>,
+  2: <Tag color="#5BD8A6">脑图</Tag>,
 };
