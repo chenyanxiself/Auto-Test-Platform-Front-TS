@@ -10,6 +10,7 @@ import {
   PageHeader,
   Table,
   Empty,
+  Spin,
 } from 'antd';
 import { CaseDetailInfo } from '@/pages/project/case/data';
 import { getCaseById } from '@/pages/project/case/service';
@@ -23,10 +24,13 @@ const CaseDetail: React.FC<CaseDetailProps> = props => {
   const projectId = props.match.params.id;
   const caseId = props.match.params.caseId;
   const [caseInfo, setCaseInfo] = useState<Partial<CaseDetailInfo>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
+      setIsLoading(true);
       const res = await getCaseById(caseId, projectId);
+      setIsLoading(false);
       if (res.status == 1) {
         setCaseInfo(res.data);
       } else {
@@ -80,7 +84,7 @@ const CaseDetail: React.FC<CaseDetailProps> = props => {
   };
 
   return (
-    <div>
+    <Spin spinning={isLoading}>
       <Card
         headStyle={{ padding: 0 }}
         title={
@@ -131,12 +135,13 @@ const CaseDetail: React.FC<CaseDetailProps> = props => {
             <Table
               dataSource={caseInfo.steps}
               columns={columns}
+              rowKey={'id'}
               pagination={false}
             />
           </Col>
         </Row>
       </Card>
-    </div>
+    </Spin>
   );
 };
 

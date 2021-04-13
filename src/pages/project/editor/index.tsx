@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ProList from '@ant-design/pro-list';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useParams } from 'umi';
+// @ts-ignore
 import listIcon from '@/assert/listIcon.svg';
 import {
   Space,
@@ -34,6 +35,7 @@ const Editor: React.FC<EditorProps> = props => {
   const [createConfirmLoading, setCreateConfirmLoading] = useState(false);
   const [currentEditor, setCurrentEditor] = useState<Partial<EditorInfo>>({});
   const [dataSource, setDataSource] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [createForm] = Form.useForm();
 
@@ -42,7 +44,9 @@ const Editor: React.FC<EditorProps> = props => {
   }, []);
 
   const getData = async () => {
+    setLoading(true);
     const res = await getAllEditor(projectId);
+    setLoading(false);
     if (res.status === 1) {
       const temp = res.data.map(item => {
         item.createTime = item.create_time;
@@ -198,6 +202,7 @@ const Editor: React.FC<EditorProps> = props => {
           dataSource={dataSource}
           // @ts-ignore
           metas={column}
+          loading={loading}
         />
       </Card>
       <Modal

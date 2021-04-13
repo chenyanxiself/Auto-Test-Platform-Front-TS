@@ -247,15 +247,6 @@ const Case = props => {
             rowKey={'index'}
             loading={isLoading}
             pagination={{ pageSize: 10 }}
-            // onRow={record =>{
-            //   return {
-            //     onMouseEnter:event=>{
-            //       event.currentTarget.setAttribute('style','cursor:pointer;  border: 1px solid green;')
-            //       console.log(event.currentTarget)
-            //       console.log(record)
-            //     }
-            //   }
-            // }}
           />
         </Card>
       </div>

@@ -49,9 +49,14 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
   const [form] = Form.useForm();
   const [isDrawerLoading, setDrawerLoading] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [tabkey, setTabkey] = useState<string>('1');
+  const [taskImg, setTaskImg] = useState([]);
+  const [taskRelevanceCase, setTaskRelevanceCase] = useState([]);
+
   const cname = props.currentTask.creator
     ? props.currentTask.creator.cname
     : '';
+
   useEffect(() => {
     if (props.currentTask.id) {
       setDrawerVisible(true);
@@ -76,6 +81,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
     if (visible) {
       setDrawerLoading(true);
       const res = await getTaskDetail(props.projectId, props.currentTask.id);
+      setDrawerLoading(false);
       if (res.status === 1) {
         form.setFieldsValue({
           taskTitle: res.data.title,
@@ -83,14 +89,14 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
           taskPriority: res.data.priority,
           taskStatus: res.data.status,
           taskFollower: res.data.follower,
-          attachment: processAttachment(res.data.img),
-          relevanceCase: res.data.relevance_case,
         });
+        setTaskImg(processAttachment(res.data.img));
+        setTaskRelevanceCase(res.data.relevance_case);
       } else {
         message.warning(res.error);
       }
-      setDrawerLoading(false);
     } else {
+      setTabkey('1');
       form.resetFields();
       props.dispatch({
         type: 'overview/setCurrentTask',
@@ -245,6 +251,23 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
     }
   };
 
+  const saveRelevanceCaseHandler = async (
+    selectedCases,
+    method: 'delete' | 'update',
+  ) => {
+    const res = await updateTask(
+      props.projectId,
+      props.currentTask.id,
+      JSON.stringify(selectedCases.map(item => item.id)),
+      'relevance_case',
+    );
+    if (res.status !== 1) {
+      return message.warning(res.error);
+    }
+    message.success(method == 'update' ? '修改成功' : '删除成功');
+    setTaskRelevanceCase(selectedCases);
+  };
+
   return (
     <Drawer
       visible={drawerVisible}
@@ -322,20 +345,22 @@ const TaskDrawer: React.FC<TaskDrawerProps> = props => {
                 </Form.Item>
               </Col>
               <Col span={24}>
-                <Tabs defaultActiveKey="1">
+                <Tabs activeKey={tabkey} onTabClick={k => setTabkey(k)}>
                   <TabPane tab="附件" key="1">
-                    <Form.Item name={'attachment'}>
-                      <ProjectImgUpload
-                        customRequestHandle={customRequestHandle}
-                        removeHandle={removeHandle}
-                        maxLength={3}
-                      />
-                    </Form.Item>
+                    <ProjectImgUpload
+                      customRequestHandle={customRequestHandle}
+                      removeHandle={removeHandle}
+                      maxLength={3}
+                      value={taskImg}
+                      onSave={v => setTaskImg(v)}
+                    />
                   </TabPane>
                   <TabPane tab="关联" key="2">
-                    <Form.Item name={'relevanceCase'}>
-                      <RelevanceCase />
-                    </Form.Item>
+                    <RelevanceCase
+                      projectId={props.projectId}
+                      onSave={saveRelevanceCaseHandler}
+                      value={taskRelevanceCase}
+                    />
                   </TabPane>
                 </Tabs>
               </Col>
