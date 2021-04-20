@@ -4,6 +4,7 @@ import {
   BarsOutlined,
   ExclamationCircleOutlined,
   HomeOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
 import { Tag } from 'antd';
 
@@ -60,6 +61,7 @@ export const navigationIcon = {
   workspace: <HomeOutlined />,
   project: <AppstoreOutlined />,
   manage: <BarsOutlined />,
+  tool: <ToolOutlined />,
 };
 
 export const editorType = {

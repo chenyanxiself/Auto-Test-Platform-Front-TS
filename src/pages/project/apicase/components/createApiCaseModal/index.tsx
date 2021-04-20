@@ -7,24 +7,24 @@ import { getStrDataFromJson, getJsonDataFromStr } from '@/utils/common';
 import { singleCaseDebug } from '@/pages/project/apicase/service';
 import { ApiCaseInfo } from '@/pages/project/apicase/data';
 import { getEnvByProjectId } from '@/pages/project/service';
-import ReactJson from 'react-json-view'
+import ReactJson from 'react-json-view';
 
 const { TabPane } = Tabs;
 
 interface CreateApiCaseModalProps {
-  visible: boolean
-  cancelHandler: () => void
-  afterHandler: (value: any) => void
-  currentApiCase: Partial<ApiCaseInfo>
-  projectId: number
+  visible: boolean;
+  cancelHandler: () => void;
+  afterHandler: (value: any) => void;
+  currentApiCase: Partial<ApiCaseInfo>;
+  projectId: number;
 }
 
 interface ResponseInfo {
-  data: any
-  time: number
-  status: number
-  assert: any
-  isLoading: boolean
+  data: any;
+  time: number;
+  status: number;
+  assert: any;
+  isLoading: boolean;
 }
 
 const defaultResponse: ResponseInfo = {
@@ -35,7 +35,7 @@ const defaultResponse: ResponseInfo = {
   isLoading: false,
 };
 
-const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
+const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = props => {
   const [response, setResponse] = useState<ResponseInfo>(defaultResponse);
   const [envSections, setEnvSections] = useState([]);
   const [form] = Form.useForm();
@@ -50,8 +50,8 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
   };
 
   useEffect(() => {
-    if (props.visible){
-      setResponse(defaultResponse)
+    if (props.visible) {
+      setResponse(defaultResponse);
       form.setFieldsValue({
         caseName: props.currentApiCase.caseName,
         requestMehod: props.currentApiCase.requestMehod,
@@ -60,14 +60,15 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
         requestHeaders: props.currentApiCase.requestHeaders,
         requestQuery: props.currentApiCase.requestQuery,
         requestBody: props.currentApiCase.requestBody,
-      })
+      });
       getData();
     }
   }, [props.visible]);
 
   const okHandler = () => {
-    form.validateFields()
-      .then(async (value) => {
+    form
+      .validateFields()
+      .then(async value => {
         props.afterHandler(value);
       })
       .catch();
@@ -82,8 +83,8 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
     },
   };
 
-  const submitHandler = async (value) => {
-    setResponse((pre) => ({ ...pre, isLoading: true }));
+  const submitHandler = async value => {
+    setResponse(pre => ({ ...pre, isLoading: true }));
     let res = await singleCaseDebug(value);
     var newResponse = { ...response };
     if (res.status === 1) {
@@ -102,7 +103,7 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
     let styleAssert = { marginLeft: 8, marginRight: 20 };
     let styleStatus = { marginLeft: 8, marginRight: 20 };
     let styleTime = { marginLeft: 8, marginRight: 8 };
-    if (response.status){
+    if (response.status) {
       const status = response.status.toString();
       if (status.startsWith('4') || status.startsWith('5')) {
         styleStatus['color'] = 'red';
@@ -159,7 +160,7 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
       visible={props.visible}
       onCancel={props.cancelHandler}
       width={1000}
-      title='用例编辑'
+      title="用例编辑"
       onOk={okHandler}
       centered={true}
       bodyStyle={{ height: 480 }}
@@ -171,26 +172,26 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
           <Form
             {...formItemLayout}
             onFinish={submitHandler}
-            name='projecrCase'
+            name="projecrCase"
             form={form}
           >
             <Form.Item
-              name='caseName'
-              label='用例名称'
+              name="caseName"
+              label="用例名称"
               rules={[{ required: true, message: '必填' }]}
             >
-              <Input placeholder='请输入用例名称' autoComplete="off" />
+              <Input placeholder="请输入用例名称" autoComplete="off" />
             </Form.Item>
             <Form.Item
-              name='requestMehod'
-              label='请求方式'
+              name="requestMehod"
+              label="请求方式"
               rules={[{ required: true, message: '必填' }]}
               wrapperCol={{
                 span: 7,
               }}
             >
               <Select
-                placeholder='请求方式'
+                placeholder="请求方式"
                 style={{ width: '80px' }}
                 bordered={true}
               >
@@ -199,40 +200,33 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
               </Select>
             </Form.Item>
             <Form.Item
-              name='requestPath'
-              label='请求路径'
+              name="requestPath"
+              label="请求路径"
               rules={[{ required: true, message: '必填' }]}
             >
-              <Input placeholder='请输入请求地址' autoComplete="off" />
+              <Input placeholder="请输入请求地址" autoComplete="off" />
             </Form.Item>
             <Form.Item
-              name='requestHost'
-              label='请求域名'
+              name="requestHost"
+              label="请求域名"
               required={true}
               rules={[{ validator: hostValidator }]}
             >
               <Host envSections={envSections} />
             </Form.Item>
-            <Form.Item
-              name='requestHeaders'
-              label='请求头部'
-            >
+            <Form.Item name="requestHeaders" label="请求头部">
               <RequestArgsModal />
             </Form.Item>
-            <Form.Item
-              name='requestQuery'
-              label='请求参数'
-            >
+            <Form.Item name="requestQuery" label="请求参数">
               <RequestArgsModal />
             </Form.Item>
-            <Form.Item
-              name='requestBody'
-              label='请求主体'
-            >
+            <Form.Item name="requestBody" label="请求主体">
               <RequestArgsModal />
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 4 }}>
-              <Button type='primary' htmlType="submit">调试</Button>
+              <Button type="primary" htmlType="submit">
+                调试
+              </Button>
             </Form.Item>
           </Form>
         </div>
@@ -240,33 +234,36 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = (props) => {
           <span>响应结果:</span>
           <Tabs defaultActiveKey="1" tabBarExtraContent={getExtra()}>
             <TabPane tab="Rows" key="1">
-              <Spin
-                spinning={response.isLoading}
-              >
-                <div style={{
-                  border: '1px solid #d9d9d9',
-                  height: 300,
-                  overflowY: 'scroll',
-                }}>
+              <Spin spinning={response.isLoading}>
+                <div
+                  style={{
+                    border: '1px solid #d9d9d9',
+                    height: 300,
+                    overflowY: 'scroll',
+                  }}
+                >
                   <span>{response.data}</span>
                 </div>
               </Spin>
             </TabPane>
             <TabPane tab="Json" key="2">
-              <Spin
-                spinning={response.isLoading}
-              >
-                <div style={{
-                  border: '1px solid #d9d9d9',
-                  height: 300,
-                  overflowY: 'scroll',
-                }}>
+              <Spin spinning={response.isLoading}>
+                <div
+                  style={{
+                    border: '1px solid #d9d9d9',
+                    height: 300,
+                    overflowY: 'scroll',
+                  }}
+                >
                   <div>
                     <ReactJson
                       src={getJsonDataFromStr(response.data)}
                       name={false}
+                      iconStyle={'square'}
                       displayDataTypes={false}
                       displayObjectSize={false}
+                      enableClipboard={false}
+                      shouldCollapse={false}
                     />
                   </div>
                 </div>

@@ -9,6 +9,11 @@ export default [
       { path: '/project', component: '@/pages/project', exact: true },
       { path: '/workspace', component: '@/pages/workspace', exact: true },
       {
+        path: '/tool',
+        component: '@/pages/tool',
+        exact: true,
+      },
+      {
         path: '/manage/user',
         component: '@/pages/manage/userManage',
         exact: true,

@@ -6,7 +6,7 @@ import {
   SettingOutlined,
   EnvironmentOutlined,
   CalculatorOutlined,
-  ToolOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 
 export default [
@@ -44,7 +44,7 @@ export default [
     name: '编辑器',
     path: '/project/:id/editor',
     regExp: /^\/project\/\d+\/editor\/?/,
-    icon: <ToolOutlined />,
+    icon: <EditOutlined />,
   },
   {
     name: '项目设置',
