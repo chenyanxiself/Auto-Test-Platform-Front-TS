@@ -27,7 +27,7 @@ import RelevanceCase from '@/pages/project/overview/components/relevanceCase';
 const { TabPane } = Tabs;
 
 interface ColumnsProps {
-  columns: ColumnsInfo;
+  column: ColumnsInfo;
   index: number;
   dispatch: Dispatch;
   projectId: number;
@@ -37,12 +37,12 @@ const Columns: React.FC<ColumnsProps> = props => {
   const [titleValue, setTitleValue] = useState('');
 
   useEffect(() => {
-    setTitleValue(props.columns.title);
-  }, [props.columns.title]);
+    setTitleValue(props.column.title);
+  }, [props.column.title]);
 
   const saveTitle = async e => {
     const newValue = e.target.value;
-    const res = await updateList(props.projectId, props.columns.id, newValue);
+    const res = await updateList(props.projectId, props.column.id, newValue);
     if (res.status == 1) {
       setTitleValue(newValue);
       message.success('修改成功');
@@ -59,7 +59,7 @@ const Columns: React.FC<ColumnsProps> = props => {
       cancelText: '取消',
       maskClosable: true,
       onOk: async () => {
-        let res = await deleteTaskList(props.columns.id, props.projectId);
+        let res = await deleteTaskList(props.column.id, props.projectId);
         if (res.status === 1) {
           message.success('删除成功');
           props.dispatch({
@@ -154,7 +154,7 @@ const Columns: React.FC<ColumnsProps> = props => {
                   </TabPane>
                   <TabPane tab="关联" key="2">
                     <Form.Item name={'relevanceCase'}>
-                      <RelevanceCase />
+                      <RelevanceCase projectId={props.projectId} />
                     </Form.Item>
                   </TabPane>
                 </Tabs>
@@ -177,7 +177,7 @@ const Columns: React.FC<ColumnsProps> = props => {
         const priority = value.taskPriority ? value.taskPriority : 3;
         const res = await createTask(
           props.projectId,
-          props.columns.id,
+          props.column.id,
           value.taskTitle,
           priority,
           follower,
@@ -202,7 +202,7 @@ const Columns: React.FC<ColumnsProps> = props => {
   };
 
   return (
-    <Draggable draggableId={props.columns.id.toString()} index={props.index}>
+    <Draggable draggableId={props.column.id.toString()} index={props.index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -229,10 +229,10 @@ const Columns: React.FC<ColumnsProps> = props => {
             <PlusOutlined style={{ fontSize: 20 }} />
           </div>
           <List
-            taskList={props.columns.taskList}
-            title={props.columns.title}
+            taskList={props.column.taskList}
+            title={props.column.title}
             projectId={props.projectId}
-            listId={props.columns.id}
+            listId={props.column.id}
           />
         </div>
       )}

@@ -3,10 +3,13 @@ import { Divider, Input, Radio } from 'antd';
 import style from './index.less';
 import JsonTool from '@/pages/tool/components/json';
 import Base64Tool from '@/pages/tool/components/base64';
+import UrlTool from '@/pages/tool/components/url';
+import Md5Tool from '@/pages/tool/components/md5';
 
 const tooleTypeEnums = {
   json: 'Json',
   base64: 'Base64',
+  md5: 'Md5',
   url: 'Url',
 };
 const Tool = props => {
@@ -26,8 +29,10 @@ const Tool = props => {
         return <JsonTool leftStyle={leftStyle} rightStyle={rightStyle} />;
       case tooleTypeEnums.base64:
         return <Base64Tool leftStyle={leftStyle} rightStyle={rightStyle} />;
+      case tooleTypeEnums.md5:
+        return <Md5Tool leftStyle={leftStyle} rightStyle={rightStyle} />;
       case tooleTypeEnums.url:
-        return <div />;
+        return <UrlTool leftStyle={leftStyle} rightStyle={rightStyle} />;
       default:
         return <div>Not Defined</div>;
     }

@@ -56,16 +56,22 @@ export const updateTaskSort = (
   projectId,
   startListId,
   endListId,
-  startIndex,
-  endIndex,
+  id,
+  beforeId,
+  afterId,
 ) => {
   let data = {
-    start_index: startIndex,
-    end_index: endIndex,
+    id,
     project_id: projectId,
     start_list_id: startListId,
     end_list_id: endListId,
   };
+  if (afterId) {
+    data['after_id'] = afterId;
+  }
+  if (beforeId) {
+    data['before_id'] = beforeId;
+  }
   return request(urls.updateTaskSortUrl, { method: 'post', data });
 };
 

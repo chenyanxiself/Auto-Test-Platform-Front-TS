@@ -34,11 +34,11 @@ const Base64Tool: React.FC<Base64ToolProps> = props => {
         ref={ref}
       />
       <Space direction={'vertical'}>
-        <Button type={'primary'} onClick={decodeHandler}>
-          Decode
-        </Button>
         <Button type={'primary'} onClick={encodeHandler}>
           Encode
+        </Button>
+        <Button type={'primary'} onClick={decodeHandler}>
+          Decode
         </Button>
       </Space>
       <div style={{ ...props.rightStyle }} className={styles.div}>
