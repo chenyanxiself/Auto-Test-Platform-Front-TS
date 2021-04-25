@@ -6,7 +6,7 @@ import TopHeader from '@/layouts/components/TopHeader';
 import zhCN from 'antd/es/locale/zh_CN';
 import { ConfigProvider } from 'antd';
 import styles from './index.less';
-import logo from '@/assert/logo.png';
+import logo from '@/assert/ic-logo.png';
 import Menus from '@/layouts/components/Menus';
 import { useHover, useDebounceFn } from '@umijs/hooks';
 
