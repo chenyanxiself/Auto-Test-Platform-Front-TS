@@ -5,12 +5,14 @@ import JsonTool from '@/pages/tool/components/json';
 import Base64Tool from '@/pages/tool/components/base64';
 import UrlTool from '@/pages/tool/components/url';
 import Md5Tool from '@/pages/tool/components/md5';
+import CalculatorTool from '@/pages/tool/components/calculator';
 
 const tooleTypeEnums = {
   json: 'Json',
   base64: 'Base64',
   md5: 'Md5',
   url: 'Url',
+  calculator: 'Calculator',
 };
 const Tool = props => {
   const [toolKey, setToolKey] = useState(tooleTypeEnums.json);
@@ -33,6 +35,8 @@ const Tool = props => {
         return <Md5Tool leftStyle={leftStyle} rightStyle={rightStyle} />;
       case tooleTypeEnums.url:
         return <UrlTool leftStyle={leftStyle} rightStyle={rightStyle} />;
+      case tooleTypeEnums.calculator:
+        return <CalculatorTool />;
       default:
         return <div>Not Defined</div>;
     }

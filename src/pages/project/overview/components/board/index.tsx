@@ -23,7 +23,6 @@ interface BoardProps {
 
 const Board: React.FC<BoardProps> = props => {
   const dragEndHandler = async (result: DropResult) => {
-    console.log(result);
     const { destination, source, draggableId } = result;
     if (!destination) {
       return;
@@ -81,7 +80,11 @@ const Board: React.FC<BoardProps> = props => {
         type: 'overview/setColumnsList',
         payload: newList,
       });
-      // res = await updateListSort(props.projectId, source.index, destination.index);
+      res = await updateListSort(
+        props.projectId,
+        source.index,
+        destination.index,
+      );
     }
     if (res.status !== 1) {
       message.warning(res.error);
