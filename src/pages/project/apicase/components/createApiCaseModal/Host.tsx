@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { RequestHost } from '@/pages/project/apicase/data';
-import { Input, Select, Switch, message } from 'antd';
+import { Input, Select, Switch, message, Space } from 'antd';
 
 const { Option } = Select;
 
 interface HostProps {
-  value: RequestHost
-  onChange: (value: Partial<RequestHost>) => void
-  envSections: any[]
+  value: RequestHost;
+  onChange: (value: Partial<RequestHost>) => void;
+  envSections: any[];
 }
 
-const Host: React.FC<Partial<HostProps>> = ({ value = {isUseEnv:false}, onChange ,envSections}) => {
+const Host: React.FC<Partial<HostProps>> = ({
+  value = { isUseEnv: false },
+  onChange,
+  envSections,
+}) => {
   const triggerChange = changedValue => {
     if (onChange) {
       onChange({
@@ -22,45 +26,42 @@ const Host: React.FC<Partial<HostProps>> = ({ value = {isUseEnv:false}, onChange
 
   const renderBody = () => {
     if (value.isUseEnv) {
+      const envkey = envSections.find(item => item.id == value.envHost);
       return (
-        <Select
-          value={value.envHost}
-          style={{
-            width: 150,
-          }}
-          onChange={(value)=>{
-            triggerChange({ envHost: value })
-          }}
-          placeholder='请选择环境'
-        >
-          {envSections.map(item => {
-            return (
-              <Option value={item.id} key={item.id}>{item.name}</Option>
-            );
-          })}
-        </Select>
+        <Space>
+          <Select
+            value={value.envHost}
+            style={{
+              width: 150,
+            }}
+            onChange={value => {
+              triggerChange({ envHost: value });
+            }}
+            placeholder="请选择环境"
+          >
+            {envSections.map(item => {
+              return (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              );
+            })}
+          </Select>
+          <div style={{ marginLeft: 5, color: 'grey' }}>
+            {envkey ? envkey.host : null}
+          </div>
+        </Space>
       );
     } else {
-      return (
-        <Input
-          type="text"
-          value={value.requestHost}
-          onChange={(e)=>{
-            triggerChange({ requestHost: e.target.value })
-          }}
-          placeholder='请输入域名'
-          style={{
-            width: 210,
-          }}
-        />
-      );
+      return null;
     }
   };
+
   return (
     <span>
       <Switch
-        onChange={(value)=>{
-          triggerChange({ isUseEnv: value })
+        onChange={value => {
+          triggerChange({ isUseEnv: value });
         }}
         checked={!!value.isUseEnv}
         checkedChildren="环境"

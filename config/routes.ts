@@ -44,11 +44,11 @@ export default [
         component: '@/pages/project/case/detail',
         exact: true,
       },
-      {
-        path: '/project/:id/testsuite',
-        component: '@/pages/project/testsuite',
-        exact: true,
-      },
+      // {
+      //   path: '/project/:id/testsuite',
+      //   component: '@/pages/project/testsuite',
+      //   exact: true,
+      // },
       {
         path: '/project/:id/testReport',
         component: '@/pages/project/testReport',

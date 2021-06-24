@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
-import { Input, Form, Select, Button, Tabs, message, Spin, Modal } from 'antd';
+import {
+  Input,
+  Form,
+  Select,
+  Button,
+  Tabs,
+  message,
+  Spin,
+  Modal,
+  Row,
+  Col,
+} from 'antd';
 import Host from './Host';
-import RequestArgsModal from './RequestArgsModal';
 import { getStrDataFromJson, getJsonDataFromStr } from '@/utils/common';
 import { singleCaseDebug } from '@/pages/project/apicase/service';
 import { ApiCaseInfo } from '@/pages/project/apicase/data';
 import { getEnvByProjectId } from '@/pages/project/service';
 import ReactJson from 'react-json-view';
+import EditableTable from '@/pages/project/apicase/components/createApiCaseModal/RequestArgs';
+import axios from 'axios';
+import { SuiteInfo } from '@/pages/project/apicase/data';
 
 const { TabPane } = Tabs;
 
@@ -17,6 +30,7 @@ interface CreateApiCaseModalProps {
   afterHandler: (value: any) => void;
   currentApiCase: Partial<ApiCaseInfo>;
   projectId: number;
+  suiteList: SuiteInfo[];
 }
 
 interface ResponseInfo {
@@ -37,6 +51,11 @@ const defaultResponse: ResponseInfo = {
 
 const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = props => {
   const [response, setResponse] = useState<ResponseInfo>(defaultResponse);
+  const [baseTabkey, setBaseTabkey] = useState<'case' | 'response'>('case');
+  const [requestTabkey, setRequestTabKey] = useState<
+    'Params' | 'Headers' | 'Body'
+  >('Headers');
+  const [resTabkey, setResTabkey] = useState<'row' | 'json'>('row');
   const [envSections, setEnvSections] = useState([]);
   const [form] = Form.useForm();
 
@@ -50,20 +69,27 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = props => {
   };
 
   useEffect(() => {
+    setResponse(defaultResponse);
     if (props.visible) {
-      setResponse(defaultResponse);
+      setBaseTabkey('case');
+      setResTabkey('row');
+      setRequestTabKey('Params');
       form.setFieldsValue({
         caseName: props.currentApiCase.caseName,
+        suiteId: props.currentApiCase.suiteId,
         requestMehod: props.currentApiCase.requestMehod,
-        requestPath: props.currentApiCase.requestPath,
+        requestUrl: props.currentApiCase.requestUrl,
         requestHost: props.currentApiCase.requestHost,
         requestHeaders: props.currentApiCase.requestHeaders,
         requestQuery: props.currentApiCase.requestQuery,
         requestBody: props.currentApiCase.requestBody,
       });
-      getData();
     }
   }, [props.visible]);
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   const okHandler = () => {
     form
@@ -74,29 +100,56 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = props => {
       .catch();
   };
 
-  const formItemLayout = {
-    labelCol: {
-      span: 4,
-    },
-    wrapperCol: {
-      span: 17,
-    },
-  };
-
   const submitHandler = async value => {
-    setResponse(pre => ({ ...pre, isLoading: true }));
-    let res = await singleCaseDebug(value);
-    var newResponse = { ...response };
-    if (res.status === 1) {
-      newResponse.data = res.data.response;
-      newResponse.status = res.data.status;
-      newResponse.time = res.data.time;
-      newResponse.assert = res.data.assert;
-    } else {
-      message.warning(res.error);
+    let url = value.requestUrl;
+    if (value.requestHost && value.requestHost.isUseEnv) {
+      const envHost = envSections.find(
+        item => item.id == value.requestHost.envHost,
+      ).host;
+      try {
+        let temp = new URL(url);
+        const envTemp = new URL(envHost);
+        temp.host = envTemp.host;
+        url = temp.toString();
+      } catch (e) {
+        url = envHost + url;
+      }
     }
-    newResponse.isLoading = false;
-    setResponse(newResponse);
+    let requestProps = { url };
+    if (value.requestMehod == 1) {
+      requestProps['method'] = 'get';
+    } else if (value.requestMehod == 2) {
+      requestProps['method'] = 'post';
+    }
+    requestProps['headers'] = value.requestHeaders;
+    requestProps['params'] = value.requestQuery;
+    requestProps['data'] = value.requestBody;
+    const instanse = axios.create({
+      baseURL: '',
+    });
+    setResponse({ ...defaultResponse, isLoading: true });
+    var start = Date.now();
+    try {
+      const res = await instanse.request(requestProps);
+      var millis = Date.now() - start;
+      setResponse({
+        ...response,
+        data: res.data,
+        time: millis,
+        status: res.status,
+        isLoading: false,
+      });
+    } catch (e) {
+      setResponse({
+        ...response,
+        data: '',
+        time: 0,
+        status: null,
+        isLoading: false,
+      });
+      message.warning(e.toString());
+    }
+    setBaseTabkey('response');
   };
 
   const getExtra = () => {
@@ -142,17 +195,13 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = props => {
         if (value.envHost) {
           return Promise.resolve();
         } else {
-          return Promise.reject('必填');
+          return Promise.reject();
         }
       } else {
-        if (value.requestHost) {
-          return Promise.resolve();
-        } else {
-          return Promise.reject('必填');
-        }
+        return Promise.resolve();
       }
     } else {
-      return Promise.reject('必填');
+      return Promise.resolve();
     }
   };
   return (
@@ -163,114 +212,167 @@ const CreateApiCaseModal: React.FC<CreateApiCaseModalProps> = props => {
       title="用例编辑"
       onOk={okHandler}
       centered={true}
-      bodyStyle={{ height: 480 }}
+      bodyStyle={{ height: 580, paddingLeft: 5, paddingRight: 20 }}
       maskClosable={false}
       forceRender={true}
     >
       <div className={styles.main}>
-        <div className={styles.left}>
-          <Form
-            {...formItemLayout}
-            onFinish={submitHandler}
-            name="projecrCase"
-            form={form}
-          >
-            <Form.Item
-              name="caseName"
-              label="用例名称"
-              rules={[{ required: true, message: '必填' }]}
+        <Tabs
+          activeKey={baseTabkey}
+          onTabClick={(k: 'case' | 'response') => setBaseTabkey(k)}
+          tabPosition={'left'}
+        >
+          <TabPane tab="Case" key="case" style={{ height: 532 }}>
+            <Spin spinning={response.isLoading}>
+              <Form onFinish={submitHandler} name="projecrCase" form={form}>
+                <Row>
+                  <Col span={18}>
+                    <Form.Item
+                      name="caseName"
+                      label="用例名称"
+                      rules={[{ required: true, message: '必填' }]}
+                    >
+                      <Input placeholder="请输入用例名称" autoComplete="off" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={5} offset={1}>
+                    <Form.Item
+                      name="suiteId"
+                      label="测试集"
+                      rules={[{ required: true, message: '必填' }]}
+                    >
+                      <Select
+                        placeholder="选择集合"
+                        allowClear={true}
+                        bordered={true}
+                      >
+                        {props.suiteList.map(item => {
+                          return (
+                            <Select.Option value={item.id} key={item.id}>
+                              {item.title}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={5}>
+                    <Form.Item
+                      name="requestMehod"
+                      label="请求方式"
+                      rules={[{ required: true, message: '必填' }]}
+                    >
+                      <Select
+                        placeholder="请求方式"
+                        style={{ width: '80px' }}
+                        bordered={true}
+                      >
+                        <Select.Option value={1}>Get</Select.Option>
+                        <Select.Option value={2}>Post</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={16}>
+                    <Form.Item
+                      name="requestUrl"
+                      rules={[{ required: true, message: '必填' }]}
+                    >
+                      <Input placeholder="请输入请求地址" autoComplete="off" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={2} offset={1}>
+                    <Form.Item>
+                      <Button type="primary" htmlType="submit">
+                        调试
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name="requestHost"
+                      label="请求域名"
+                      rules={[{ validator: hostValidator }]}
+                    >
+                      <Host envSections={envSections} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Tabs
+                  activeKey={requestTabkey}
+                  onTabClick={(k: 'Params' | 'Headers' | 'Body') =>
+                    setRequestTabKey(k)
+                  }
+                >
+                  <TabPane tab="Params" key="Params">
+                    <Form.Item name="requestQuery">
+                      <EditableTable />
+                    </Form.Item>
+                  </TabPane>
+                  <TabPane tab="Headers" key="Headers">
+                    <Form.Item name="requestHeaders">
+                      <EditableTable />
+                    </Form.Item>
+                  </TabPane>
+                  <TabPane tab="Body" key="Body">
+                    <Form.Item name="requestBody">
+                      <Input.TextArea
+                        style={{
+                          resize: 'none',
+                          width: '100%',
+                          height: '100%',
+                          minHeight: 260,
+                          overflowY: 'auto',
+                        }}
+                      />
+                    </Form.Item>
+                  </TabPane>
+                </Tabs>
+              </Form>
+            </Spin>
+          </TabPane>
+          <TabPane tab="Response" key="response">
+            <Tabs
+              activeKey={resTabkey}
+              tabBarExtraContent={getExtra()}
+              onTabClick={(k: 'row' | 'json') => setResTabkey(k)}
             >
-              <Input placeholder="请输入用例名称" autoComplete="off" />
-            </Form.Item>
-            <Form.Item
-              name="requestMehod"
-              label="请求方式"
-              rules={[{ required: true, message: '必填' }]}
-              wrapperCol={{
-                span: 7,
-              }}
-            >
-              <Select
-                placeholder="请求方式"
-                style={{ width: '80px' }}
-                bordered={true}
-              >
-                <Select.Option value={1}>Get</Select.Option>
-                <Select.Option value={2}>Post</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="requestPath"
-              label="请求路径"
-              rules={[{ required: true, message: '必填' }]}
-            >
-              <Input placeholder="请输入请求地址" autoComplete="off" />
-            </Form.Item>
-            <Form.Item
-              name="requestHost"
-              label="请求域名"
-              required={true}
-              rules={[{ validator: hostValidator }]}
-            >
-              <Host envSections={envSections} />
-            </Form.Item>
-            <Form.Item name="requestHeaders" label="请求头部">
-              <RequestArgsModal />
-            </Form.Item>
-            <Form.Item name="requestQuery" label="请求参数">
-              <RequestArgsModal />
-            </Form.Item>
-            <Form.Item name="requestBody" label="请求主体">
-              <RequestArgsModal />
-            </Form.Item>
-            <Form.Item wrapperCol={{ offset: 4 }}>
-              <Button type="primary" htmlType="submit">
-                调试
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-        <div className={styles.right}>
-          <span>响应结果:</span>
-          <Tabs defaultActiveKey="1" tabBarExtraContent={getExtra()}>
-            <TabPane tab="Rows" key="1">
-              <Spin spinning={response.isLoading}>
+              <TabPane tab="Rows" key="row">
                 <div
                   style={{
                     border: '1px solid #d9d9d9',
-                    height: 300,
+                    height: 350,
                     overflowY: 'scroll',
                   }}
                 >
-                  <span>{response.data}</span>
+                  <span>{getStrDataFromJson(response.data)}</span>
                 </div>
-              </Spin>
-            </TabPane>
-            <TabPane tab="Json" key="2">
-              <Spin spinning={response.isLoading}>
-                <div
-                  style={{
-                    border: '1px solid #d9d9d9',
-                    height: 300,
-                    overflowY: 'scroll',
-                  }}
-                >
-                  <div>
-                    <ReactJson
-                      src={getJsonDataFromStr(response.data)}
-                      name={false}
-                      iconStyle={'square'}
-                      displayDataTypes={false}
-                      displayObjectSize={false}
-                      enableClipboard={false}
-                      shouldCollapse={false}
-                    />
+              </TabPane>
+              <TabPane tab="Json" key="json">
+                <Spin spinning={response.isLoading}>
+                  <div
+                    style={{
+                      border: '1px solid #d9d9d9',
+                      height: 350,
+                      overflowY: 'scroll',
+                    }}
+                  >
+                    <div>
+                      <ReactJson
+                        src={getJsonDataFromStr(response.data)}
+                        name={false}
+                        iconStyle={'square'}
+                        displayDataTypes={false}
+                        displayObjectSize={false}
+                        enableClipboard={false}
+                        shouldCollapse={false}
+                      />
+                    </div>
                   </div>
-                </div>
-              </Spin>
-            </TabPane>
-          </Tabs>
-        </div>
+                </Spin>
+              </TabPane>
+            </Tabs>
+          </TabPane>
+        </Tabs>
       </div>
     </Modal>
   );

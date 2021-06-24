@@ -28,12 +28,12 @@ export default [
     regExp: /^\/project\/\d+\/apicase\/?$/,
     icon: <BlockOutlined />,
   },
-  {
-    name: '测试集',
-    path: '/project/:id/testsuite',
-    regExp: /^\/project\/\d+\/testsuite\/?$/,
-    icon: <BookOutlined />,
-  },
+  // {
+  //   name: '测试集',
+  //   path: '/project/:id/testsuite',
+  //   regExp: /^\/project\/\d+\/testsuite\/?$/,
+  //   icon: <BookOutlined />,
+  // },
   {
     name: '测试报告',
     path: '/project/:id/testReport',

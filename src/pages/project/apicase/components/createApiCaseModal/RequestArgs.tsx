@@ -1,4 +1,11 @@
-import React, { useContext, useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import { Table, Input, Button, Form } from 'antd';
 import './requestArgs.less';
 
@@ -17,21 +24,21 @@ const EditableRow = ({ index, ...props }) => {
 };
 
 const EditableCell = ({
-                        title,
-                        editable,
-                        children,
-                        dataIndex,
-                        record,
-                        handleSave,
-                        ...restProps
-                      }) => {
+  title,
+  editable,
+  children,
+  dataIndex,
+  record,
+  handleSave,
+  ...restProps
+}) => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef();
   const form = useContext(EditableContext);
   useEffect(() => {
     if (editing) {
       // @ts-ignore
-      inputRef.current.focus();
+      inputRef.current!.focus();
     }
   }, [editing]);
 
@@ -63,7 +70,12 @@ const EditableCell = ({
         }}
         name={dataIndex}
       >
-        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+        <Input.TextArea
+          style={{ resize: 'none' }}
+          ref={inputRef}
+          onPressEnter={save}
+          onBlur={save}
+        />
       </Form.Item>
     ) : (
       <div
@@ -82,11 +94,33 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 
-const EditableTable = (props,ref) => {
+interface EditableTableProps {
+  value: any;
+  onChange: (value: any) => void;
+}
+
+const EditableTable: React.FC<Partial<EditableTableProps>> = props => {
   const [dataSource, setDataSource] = useState([]);
   useEffect(() => {
-    setDataSource(props.value);
-  }, []);
+    setDataSource(processArgs(props.value));
+  }, [props.value]);
+
+  const processArgs = value => {
+    var initeValue;
+    if (value) {
+      initeValue = Object.keys(value).map((item, index) => {
+        return {
+          key: index,
+          arg: item,
+          value: value[item],
+        };
+      });
+    } else {
+      initeValue = [];
+    }
+    initeValue.push({ key: initeValue.length, arg: null, value: null });
+    return initeValue;
+  };
 
   const columns = [
     {
@@ -121,22 +155,20 @@ const EditableTable = (props,ref) => {
     },
   ];
 
-  useImperativeHandle(ref, () => ({
-    getDataSource: () => {
-      const returnData = dataSource.reduce((pre, cur) => {
-        if (cur.arg || cur.value) {
-          // @ts-ignore
-          pre[[cur.arg]] = cur.value;
-        }
-        return pre;
-      }, {});
-
-      if (Object.keys(returnData).length === 0) {
-        return undefined;
+  const getDataSource = newData => {
+    const returnData = newData.reduce((pre, cur) => {
+      if (cur.arg || cur.value) {
+        // @ts-ignore
+        pre[[cur.arg]] = cur.value;
       }
-      return returnData;
+      return pre;
+    }, {});
+
+    if (Object.keys(returnData).length === 0) {
+      return undefined;
     }
-  }));
+    return returnData;
+  };
 
   const handleDelete = key => {
     const newData = dataSource.reduce((pre, cur) => {
@@ -148,7 +180,7 @@ const EditableTable = (props,ref) => {
       }
       return pre;
     }, []);
-    setDataSource(newData);
+    props.onChange(getDataSource(newData));
   };
 
   const handleSave = row => {
@@ -156,10 +188,14 @@ const EditableTable = (props,ref) => {
     const index = newData.findIndex(item => row.key === item.key);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
-    if ((row.arg !== null || row.value !== null) && index === (newData.length - 1)) {
+    if (
+      (row.arg !== null || row.value !== null) &&
+      index === newData.length - 1
+    ) {
       newData.push({ key: dataSource.length + 1, arg: null, value: null });
     }
-    setDataSource(newData);
+    console.log(newData);
+    props.onChange(getDataSource(newData));
   };
 
   const components = {
@@ -168,6 +204,7 @@ const EditableTable = (props,ref) => {
       cell: EditableCell,
     },
   };
+
   const columnsRe = columns.map(col => {
     if (!col.editable) {
       return col;
@@ -187,15 +224,16 @@ const EditableTable = (props,ref) => {
   return (
     <Table
       tableLayout={'fixed'}
-      size='small'
+      size="small"
       components={components}
       rowClassName={() => 'editable-row'}
       bordered
       dataSource={dataSource}
       columns={columnsRe}
       pagination={false}
+      scroll={{ y: 260 }}
     />
   );
 };
 
-export default forwardRef(EditableTable);
+export default EditableTable;

@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Checkbox, Button, message } from 'antd';
 import Host from '@/pages/project/apicase/components/createApiCaseModal/Host';
-import RequestArgsModal from '@/pages/project/apicase/components/createApiCaseModal/RequestArgsModal';
 import { getEnvByProjectId } from '@/pages/project/service';
 
 interface ExecuteSuiteModalProps {
-  visible: boolean
-  cancelHandler: () => void
-  finishHandler: (value) => void
-  projectId:number
+  visible: boolean;
+  cancelHandler: () => void;
+  finishHandler: (value) => void;
+  projectId: number;
 }
 
-const ExecuteSuiteModal: React.FC<ExecuteSuiteModalProps> = (props) => {
+const ExecuteSuiteModal: React.FC<ExecuteSuiteModalProps> = props => {
   const [envSections, setEnvSections] = useState([]);
   const [form] = Form.useForm();
   useEffect(() => {
@@ -27,9 +26,9 @@ const ExecuteSuiteModal: React.FC<ExecuteSuiteModalProps> = (props) => {
     }
   }, [props.visible]);
 
-  useEffect(()=>{
-    getEnvData()
-  },[])
+  useEffect(() => {
+    getEnvData();
+  }, []);
 
   const getEnvData = async () => {
     const res = await getEnvByProjectId(props.projectId);
@@ -63,30 +62,22 @@ const ExecuteSuiteModal: React.FC<ExecuteSuiteModalProps> = (props) => {
         onFinish={props.finishHandler}
         labelAlign={'left'}
       >
-        <Form.Item
-          label={'全局域名'}
-          name={'globalHost'}
-        >
-          <Host envSections={envSections}/>
+        <Form.Item label={'全局域名'} name={'globalHost'}>
+          <Host envSections={envSections} />
         </Form.Item>
-        <Form.Item
-          label={'全局请求头'}
-          name={'globalHeaders'}
-        >
-          <RequestArgsModal />
-        </Form.Item>
-        <Form.Item
-          {...tailLayout}
-          name="isSaveCookie"
-          valuePropName="checked"
-        >
+        {/*<Form.Item*/}
+        {/*  label={'全局请求头'}*/}
+        {/*  name={'globalHeaders'}*/}
+        {/*>*/}
+        {/*  <RequestArgsModal />*/}
+        {/*</Form.Item>*/}
+        <Form.Item {...tailLayout} name="isSaveCookie" valuePropName="checked">
           <Checkbox>自动保存Cookie</Checkbox>
         </Form.Item>
         <Form.Item {...tailLayout}>
-          <Button
-            htmlType={'submit'}
-            type={'primary'}
-          >提交</Button>
+          <Button htmlType={'submit'} type={'primary'}>
+            提交
+          </Button>
         </Form.Item>
       </Form>
     </Modal>
