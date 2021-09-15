@@ -6,41 +6,64 @@ import styles from '../columns/index.less';
 interface PriorityMenuProps {
   value?: any;
   onChange?: (v: any) => void;
-  onSave?: (v: any) => void
+  onSave?: (v: any) => void;
 }
 
 const PriorityMenu: React.FC<PriorityMenuProps> = props => {
   const clickHandler = ({ key, domEvent }) => {
     domEvent.stopPropagation();
     key = parseInt(key);
-    if (props.onSave){
-      props.onSave(key)
-    }else {
+    if (props.onSave) {
+      props.onSave(key);
+    } else {
       props.onChange(key);
     }
   };
 
   const menu = (
-    <Menu onClick={clickHandler} selectedKeys={props.value?[props.value.toString()]:[]}>
+    <Menu
+      onClick={clickHandler}
+      selectedKeys={props.value ? [props.value.toString()] : []}
+    >
       <Menu.Item key={1}>
-        <div style={{ backgroundColor: bugPriorityBgColor[1] }}
-             className={styles.priorityEnum}>{bugPriorityEnum[1]}</div>
+        <div
+          style={{ backgroundColor: bugPriorityBgColor[1] }}
+          className={styles.priorityEnum}
+        >
+          {bugPriorityEnum[1]}
+        </div>
       </Menu.Item>
       <Menu.Item key={2}>
-        <div style={{ backgroundColor: bugPriorityBgColor[2] }}
-             className={styles.priorityEnum}>{bugPriorityEnum[2]}</div>
+        <div
+          style={{ backgroundColor: bugPriorityBgColor[2] }}
+          className={styles.priorityEnum}
+        >
+          {bugPriorityEnum[2]}
+        </div>
       </Menu.Item>
       <Menu.Item key={3}>
-        <div style={{ backgroundColor: bugPriorityBgColor[3] }}
-             className={styles.priorityEnum}>{bugPriorityEnum[3]}</div>
+        <div
+          style={{ backgroundColor: bugPriorityBgColor[3] }}
+          className={styles.priorityEnum}
+        >
+          {bugPriorityEnum[3]}
+        </div>
       </Menu.Item>
       <Menu.Item key={4}>
-        <div style={{ backgroundColor: bugPriorityBgColor[4] }}
-             className={styles.priorityEnum}>{bugPriorityEnum[4]}</div>
+        <div
+          style={{ backgroundColor: bugPriorityBgColor[4] }}
+          className={styles.priorityEnum}
+        >
+          {bugPriorityEnum[4]}
+        </div>
       </Menu.Item>
       <Menu.Item key={5}>
-        <div style={{ backgroundColor: bugPriorityBgColor[5] }}
-             className={styles.priorityEnum}>{bugPriorityEnum[5]}</div>
+        <div
+          style={{ backgroundColor: bugPriorityBgColor[5] }}
+          className={styles.priorityEnum}
+        >
+          {bugPriorityEnum[5]}
+        </div>
       </Menu.Item>
     </Menu>
   );
